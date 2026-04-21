@@ -474,16 +474,21 @@ Supabase[^supabase] 是新創的預設後端……
    - frontmatter 是否齊全、格式正確
    - H1 是否在正文第一行、`title` 是否一致
    - 是否與其他篇重疊
-4. 執行 build 檢查：
+4. 執行 build 檢查（build 過程中 vite plugin 會順手重產 `public/magazines/manifest.json`）：
    ```bash
    npm run build
    ```
+   若只想重產 manifest 不跑 build，可用：
+   ```bash
+   npm run manifest
+   ```
+   產生後打開 `public/magazines/manifest.json`，確認新 `topic-slug` 有在 `topics` 陣列裡、每篇 `<slug>` 都收錄到對應 topic 的 `articles`、逐字稿對應到 `transcripts`。漏收代表檔名不對，先修好再往下。
 5. （可選）啟 dev server 用 Playwright 掃一次
    `/magazines`、`/magazines/<topic-slug>`、`/magazines/<topic-slug>/<slug>`
    三層頁面，確認渲染正常
-6. **Push 到 `main`**（完成後最後一步，直接執行，不需再等 review）：
+6. **Push 到 `main`**（完成後最後一步，直接執行，不需再等 review）——**務必把 `manifest.json` 一起 add**，否則 GitHub Pages 抓到的 manifest 是舊版、新專刊會「看起來沒發刊」：
    ```bash
-   git add public/magazines/<topic-slug>
+   git add public/magazines/<topic-slug> public/magazines/manifest.json
    git commit -m "magazine: <topic-slug> <issue>"
    git push origin main
    ```
@@ -504,7 +509,9 @@ Supabase[^supabase] 是新創的預設後端……
 - [ ] 每篇文章正文第一行都有 `# title` H1
 - [ ] `_index.md` 正文沒有 H1（header 會渲染 title）
 - [ ] 文章數量 3–6 篇，彼此角度不重疊
-- [ ] `npm run build` 通過
+- [ ] `npm run build` 通過（或至少跑過 `npm run manifest`）
+- [ ] `public/magazines/manifest.json` 收錄新 `topic-slug`，`articles` 含所有 `<slug>`、`transcripts` 對應到逐字稿
+- [ ] `git add` 時有納入 `public/magazines/manifest.json`（漏加會導致部署後新專刊看不到）
 - [ ] （若驗證）列表頁、目錄頁、文章頁三層都正常渲染
 - [ ] 每篇 subagent 的產出都是它獨立思考的結果，不是主 agent 改寫
 

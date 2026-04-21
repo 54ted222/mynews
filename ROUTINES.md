@@ -212,9 +212,16 @@ keywords: 搜尋字串1, 搜尋字串2, 搜尋字串3, ...
 1. 產出 Markdown 內容（嚴守上方格式）
 2. 以 `Write` 工具寫入 `public/news/YYYY-MM-DD-daily-brief.md`
 3. **派 subagent 做「註解 + 逐字稿」**（見下節）
-4. **最後一步：直接 push 到 `main`**（不需等 review，推上去就會自動部署）：
+4. **重新產生 manifest**（讓站點能抓到新文章與新 transcript）：
    ```bash
-   git add public/news/YYYY-MM-DD-daily-brief.md public/news/YYYY-MM-DD-daily-brief.transcript.md
+   npm run manifest
+   ```
+   產生後打開 `public/news/manifest.json`，確認 `articles` 含新 slug、`transcripts` 含對應 slug。漏收代表檔名或副檔名不對，先修好再往下走。
+5. **最後一步：直接 push 到 `main`**（不需等 review，推上去就會自動部署）——**務必把 `manifest.json` 一起 add**，否則 GitHub Pages 拿到的 manifest 仍是舊版、新文章會「看起來沒收錄」：
+   ```bash
+   git add public/news/YYYY-MM-DD-daily-brief.md \
+           public/news/YYYY-MM-DD-daily-brief.transcript.md \
+           public/news/manifest.json
    git commit -m "news: daily brief YYYY-MM-DD"
    git push origin main
    ```
@@ -318,3 +325,5 @@ flowchart LR
 - [ ] 未與過去 3 天重複（或有標註 🔄）
 - [ ] 已派 subagent 加 GFM footnote 註解（3–6 個）
 - [ ] `public/news/YYYY-MM-DD-daily-brief.transcript.md` 存在、無 frontmatter、口語化、1000–1800 字
+- [ ] 已跑 `npm run manifest`，且 `public/news/manifest.json` 的 `articles` 含新 slug、`transcripts` 含對應 slug
+- [ ] `git add` 時有納入 `public/news/manifest.json`（漏加會導致部署後仍看不到新文章）

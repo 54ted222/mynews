@@ -21,6 +21,7 @@ npm run dev        # 開發伺服器，預設 http://localhost:5173/mynews/
 npm run build      # tsc -b + vite build（build 前會做型別檢查）
 npm run lint       # ESLint
 npm run preview    # 預覽 build 產物
+npm run manifest   # 只重產 public/{news,magazines}/manifest.json（手動新增/改名 md 後用）
 ```
 
 新增 shadcn 元件（用 npx，非其他 runner）：
