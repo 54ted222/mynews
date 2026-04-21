@@ -116,6 +116,7 @@ Frontmatter 之後空一行，第一個元素為 `# 每日創業情報 — YYYY-
 ## 輸出格式（嚴格遵守）
 
 產出單一 Markdown 檔案，路徑為 `src/news/YYYY-MM-DD-daily-brief.md`。
+如檔案已存在就加上流水號 `src/news/YYYY-MM-DD-daily-brief-2.md`。
 
 完整範本：
 
