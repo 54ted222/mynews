@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
+import { SpeechPlayer } from "@/components/speech-player"
 import { cn } from "@/lib/utils"
 import { getNews } from "@/lib/news"
 
@@ -47,8 +48,8 @@ export function NewsDetail() {
         ← 返回列表
       </Link>
 
-      <header className="flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+      <header className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
           <time dateTime={item.date}>{formatDate(item.date)}</time>
           {item.tags.length > 0 && (
             <>
@@ -63,16 +64,18 @@ export function NewsDetail() {
             </>
           )}
         </div>
+        <SpeechPlayer content={item.content} />
       </header>
 
       <div
         className="
-          prose prose-neutral max-w-none
-          prose-headings:font-semibold prose-headings:tracking-tight
-          prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
-          prose-a:text-foreground prose-a:underline
+          prose prose-neutral max-w-none break-words
+          prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
+          prose-h1:text-3xl sm:prose-h1:text-4xl prose-h2:text-2xl prose-h3:text-xl
+          prose-a:text-foreground prose-a:underline prose-a:break-words
           prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
-          prose-pre:rounded-lg prose-pre:bg-muted prose-pre:text-foreground
+          prose-pre:overflow-x-auto prose-pre:rounded-lg prose-pre:bg-muted prose-pre:text-foreground
+          prose-table:block prose-table:overflow-x-auto
           dark:prose-invert
         "
       >

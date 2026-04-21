@@ -5,13 +5,13 @@ export function SiteLayout() {
   return (
     <div className="min-h-svh bg-background text-foreground">
       <header className="border-b">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-          <Link to="/" className="flex flex-col">
-            <span className="text-lg font-semibold tracking-tight">
-              My News
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+          <Link to="/" className="flex min-w-0 flex-col">
+            <span className="font-serif text-xl font-bold tracking-tight sm:text-2xl">
+              個人報紙
             </span>
-            <span className="text-xs text-muted-foreground">
-              個人新聞頁 · 以 Markdown 撰寫
+            <span className="text-[11px] text-muted-foreground sm:text-xs">
+              每日一份，為你而寫
             </span>
           </Link>
           <nav className="flex items-center gap-4 text-sm">
@@ -19,28 +19,19 @@ export function SiteLayout() {
               to="/"
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              最新
+              頭版
             </Link>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              GitHub
-            </a>
           </nav>
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-6 py-10">
+      <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
         <Outlet />
       </main>
 
       <Separator />
-      <footer className="mx-auto max-w-3xl px-6 py-6 text-xs text-muted-foreground">
-        © {new Date().getFullYear()} My News · Built with React, Vite &
-        shadcn/ui
+      <footer className="mx-auto max-w-3xl px-4 py-6 text-xs text-muted-foreground sm:px-6">
+        © {new Date().getFullYear()} 個人報紙
       </footer>
     </div>
   )

@@ -26,9 +26,11 @@ export function NewsList() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight">最新文章</h1>
+        <h1 className="font-serif text-3xl font-bold tracking-tight sm:text-4xl">
+          今日頭版
+        </h1>
         <p className="text-sm text-muted-foreground">
-          共 {items.length} 篇，依發布日期排序。
+          共 {items.length} 則報導，依日期新到舊排序。
         </p>
       </div>
 
@@ -52,7 +54,7 @@ export function NewsList() {
                     </>
                   )}
                 </div>
-                <CardTitle className="text-xl group-hover:underline">
+                <CardTitle className="font-serif text-xl leading-snug group-hover:underline sm:text-2xl">
                   {item.title}
                 </CardTitle>
                 {item.summary && (
@@ -61,7 +63,7 @@ export function NewsList() {
               </CardHeader>
               <CardContent className="pt-0">
                 <span className="text-sm text-muted-foreground">
-                  繼續閱讀 →
+                  閱讀全文 →
                 </span>
               </CardContent>
             </Card>
