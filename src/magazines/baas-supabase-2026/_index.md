@@ -1,6 +1,6 @@
 ---
 title: 新創為什麼都選 Supabase
-issue: Vol.3
+issue: Vol.4
 date: 2026-04-22
 tags: Supabase, BaaS, 新創, 基礎設施, 封面故事
 summary: ARR 從 $30M 衝到 $70M、估值四個月從 $2B 翻倍到 $5B，Supabase 把「BaaS = 一張 Postgres」這條路徑跑出了一個 $10B 的估值提案。這一期從市場、核心、AI 疊法、帳單四個切面看它憑什麼。

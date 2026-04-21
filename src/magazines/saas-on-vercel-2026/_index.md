@@ -1,6 +1,6 @@
 ---
 title: SaaS 為什麼都跑在 Vercel 上
-issue: Vol.2
+issue: Vol.3
 date: 2026-04-21
 tags: Vercel, SaaS, 基礎設施, 封面故事
 summary: 從一家「部署 Next.js 的地方」變成 $340M ARR、90 億美元估值的 AI Cloud，Vercel 為什麼成了現代 SaaS 的預設底座？這一期拆解市場、引擎、AI 棧與帳單四個切面。
