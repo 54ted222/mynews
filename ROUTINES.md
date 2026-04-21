@@ -22,6 +22,18 @@ My News 網站（`public/news/`）的「每日創業情報」文章，推送後 
 - 聚焦「過去 24–72 小時」的新資訊。
 - 日期以執行當日 **UTC+8** 為準，格式 `YYYY-MM-DD`。
 
+### 🛑 日期取得：第 0 步、強制執行
+
+**不要從 context、前一篇 brief、記憶中推測日期**——每次都要實際跑：
+
+```bash
+TZ=Asia/Taipei date +%Y-%m-%d
+```
+
+把這個值設為 `TODAY`，全篇檔名、frontmatter `date`、title、H1 **一律使用 `TODAY`**。
+
+曾經發生過的錯誤：沿用前一天的日期產出，結果檔名變成 `YYYY-MM-DD-daily-brief-2.md`、`-3.md`、`-4.md`（因為 routine 看到「今天」的檔名已被佔用就加流水號）。這類文章會全部被列表頁歸到錯的日期，使用者以為「今天的文章沒被收錄」。**流水號 `-2`、`-3` 只該在同一天多刊才出現；若你正準備寫 `-2` 以上，先停下來檢查 `TODAY` 是不是真的等於既有檔名的日期。**
+
 ---
 
 ## 站點檔案規格（重要）
@@ -294,6 +306,9 @@ flowchart LR
 
 ## 驗收檢查（產出前自審）
 
+- [ ] 已實際跑過 `TZ=Asia/Taipei date +%Y-%m-%d` 取得 `TODAY`
+- [ ] 檔名、frontmatter `date`、title、H1 的日期 **全部等於** `TODAY`
+- [ ] 若檔名含流水號（`-2`、`-3`…），確認同一天內確實已有先前刊次；否則代表日期沿用了前一天，必須重改
 - [ ] 檔名為 `public/news/YYYY-MM-DD-daily-brief.md`，日期正確
 - [ ] Frontmatter 4 個欄位齊全且格式正確（單行 `key: value`）
 - [ ] `summary` 約 40–60 字，能一句說清今日重點

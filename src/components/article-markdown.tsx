@@ -29,7 +29,7 @@ const components: Components = {
     <div className="not-prose my-6 w-full overflow-x-auto rounded-lg border">
       <table
         {...rest}
-        className="w-max min-w-full border-collapse text-sm [&_th]:border-b [&_th]:bg-muted/50 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-semibold [&_td]:border-b [&_td]:px-3 [&_td]:py-2 [&_tr:last-child_td]:border-b-0"
+        className="w-max min-w-full border-collapse text-sm [&_th]:max-w-[320px] [&_th]:border-b [&_th]:bg-muted/50 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:align-top [&_th]:font-semibold [&_th]:break-words [&_th]:whitespace-normal [&_td]:max-w-[320px] [&_td]:border-b [&_td]:px-3 [&_td]:py-2 [&_td]:align-top [&_td]:break-words [&_td]:whitespace-normal [&_tr:last-child_td]:border-b-0"
       >
         {children}
       </table>

@@ -131,6 +131,10 @@
     --article-scale: 1.15;
 }
 
+main {
+    font-size: calc(1rem * var(--article-scale));
+}
+
 .prose {
     font-size: calc(1rem * var(--article-scale));
 }

@@ -51,6 +51,11 @@ type LoadedTopic = {
 
 const BASE = import.meta.env.BASE_URL
 
+function issueNumber(issue: string): number {
+  const match = issue.match(/\d+/)
+  return match ? Number(match[0]) : 0
+}
+
 async function fetchText(url: string): Promise<string | undefined> {
   const res = await fetch(url)
   if (!res.ok) return undefined
@@ -149,8 +154,8 @@ export function loadMagazineTopics(): Promise<MagazineTopicMeta[]> {
   topicsListPromise = loadAll().then((topics) => {
     const list = [...topics.values()].map((t) => t.meta)
     list.sort((a, b) => {
-      if (a.date === b.date) return a.title < b.title ? -1 : 1
-      return a.date < b.date ? 1 : -1
+      if (a.date !== b.date) return a.date < b.date ? 1 : -1
+      return issueNumber(b.issue) - issueNumber(a.issue)
     })
     return list
   })

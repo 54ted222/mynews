@@ -1,11 +1,11 @@
 ---
-title: 每日創業情報 — 2026-04-21（四刊）
-date: 2026-04-21
+title: 每日創業情報 — 2026-04-22
+date: 2026-04-22
 tags: 創業情報, AI 產業, SaaS
 summary: Mintlify $45M Series B 把文件做成 agent 基礎設施；SendGrid 砍免費方案利多 Resend；Baton 以 $49 買斷做並行 agent 指揮台；4/14 單日 5 筆大額融資全指向 AI infra 層。
 ---
 
-# 每日創業情報 — 2026-04-21（四刊）
+# 每日創業情報 — 2026-04-22
 
 ## 🎯 今日 TL;DR
 

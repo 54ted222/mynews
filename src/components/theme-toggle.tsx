@@ -17,13 +17,13 @@ export function ThemeToggle() {
       <Button
         type="button"
         variant="ghost"
-        size="icon-sm"
+        size="sm"
         onClick={cycleFontSize}
-        aria-label={`字體大小（目前：${fontLabel[fontSize]}）`}
+        aria-label={`字體大小（目前：${fontLabel[fontSize]}），點擊切換`}
         title={`字體：${fontLabel[fontSize]}`}
       >
         <Type />
-        <span className="sr-only">切換字體大小</span>
+        <span>{fontLabel[fontSize]}</span>
       </Button>
       <Button
         type="button"

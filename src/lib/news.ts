@@ -24,6 +24,11 @@ function dateFromSlug(slug: string): string | null {
   return match ? match[1] : null
 }
 
+function serialFromSlug(slug: string): number {
+  const match = slug.match(/-(\d+)$/)
+  return match ? Number(match[1]) : 1
+}
+
 function toItem(
   slug: string,
   raw: string,
@@ -79,7 +84,10 @@ export function loadNewsList(): Promise<NewsItem[]> {
         fetchArticle(slug, transcriptSet.has(slug))
       )
     )
-    return items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+    return items.sort((a, b) => {
+      if (a.date !== b.date) return a.date < b.date ? 1 : -1
+      return serialFromSlug(b.slug) - serialFromSlug(a.slug)
+    })
   })()
   return listPromise
 }
