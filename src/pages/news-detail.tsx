@@ -69,7 +69,11 @@ export function NewsDetail() {
             </>
           )}
         </div>
-        <SpeechPlayer content={item.content} transcript={item.transcript} />
+        <SpeechPlayer
+          slug={`news-${item.slug}`}
+          content={item.content}
+          transcript={item.transcript}
+        />
         <KeywordSearchList keywords={item.keywords} />
       </header>
 

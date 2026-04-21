@@ -78,6 +78,7 @@ export function MagazineArticlePage() {
           )}
         </div>
         <SpeechPlayer
+          slug={`magazine-${topic.slug}-${article.slug}`}
           content={article.content}
           transcript={article.transcript}
         />

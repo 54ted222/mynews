@@ -83,6 +83,7 @@ export function MagazineTopicPage() {
       {topic.intro && (
         <div className="flex flex-col gap-4">
           <SpeechPlayer
+            slug={`magazine-${topic.slug}-intro`}
             content={topic.intro}
             transcript={topic.introTranscript}
           />

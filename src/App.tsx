@@ -3,12 +3,14 @@ import { HashRouter, Route, Routes } from "react-router-dom"
 import { SiteLayout } from "@/components/layout/site-layout"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { ThemeProvider } from "@/lib/theme"
+import { AISettingsProvider } from "@/lib/ai-settings-context"
 import { Home } from "@/pages/home"
 import { NewsList } from "@/pages/news-list"
 import { NewsDetail } from "@/pages/news-detail"
 import { MagazineList } from "@/pages/magazine-list"
 import { MagazineTopicPage } from "@/pages/magazine-topic"
 import { MagazineArticlePage } from "@/pages/magazine-article"
+import { SettingsPage } from "@/pages/settings"
 
 function PageFallback() {
   return (
@@ -19,62 +21,65 @@ function PageFallback() {
 export default function App() {
   return (
     <ThemeProvider>
-      <HashRouter>
-        <ScrollToTop />
-        <Routes>
-          <Route element={<SiteLayout />}>
-            <Route
-              index
-              element={
-                <Suspense fallback={<PageFallback />}>
-                  <Home />
-                </Suspense>
-              }
-            />
-            <Route
-              path="news"
-              element={
-                <Suspense fallback={<PageFallback />}>
-                  <NewsList />
-                </Suspense>
-              }
-            />
-            <Route
-              path="news/:slug"
-              element={
-                <Suspense fallback={<PageFallback />}>
-                  <NewsDetail />
-                </Suspense>
-              }
-            />
-            <Route
-              path="magazines"
-              element={
-                <Suspense fallback={<PageFallback />}>
-                  <MagazineList />
-                </Suspense>
-              }
-            />
-            <Route
-              path="magazines/:topic"
-              element={
-                <Suspense fallback={<PageFallback />}>
-                  <MagazineTopicPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="magazines/:topic/:article"
-              element={
-                <Suspense fallback={<PageFallback />}>
-                  <MagazineArticlePage />
-                </Suspense>
-              }
-            />
-            <Route path="*" element={<Home />} />
-          </Route>
-        </Routes>
-      </HashRouter>
+      <AISettingsProvider>
+        <HashRouter>
+          <ScrollToTop />
+          <Routes>
+            <Route element={<SiteLayout />}>
+              <Route
+                index
+                element={
+                  <Suspense fallback={<PageFallback />}>
+                    <Home />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="news"
+                element={
+                  <Suspense fallback={<PageFallback />}>
+                    <NewsList />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="news/:slug"
+                element={
+                  <Suspense fallback={<PageFallback />}>
+                    <NewsDetail />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="magazines"
+                element={
+                  <Suspense fallback={<PageFallback />}>
+                    <MagazineList />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="magazines/:topic"
+                element={
+                  <Suspense fallback={<PageFallback />}>
+                    <MagazineTopicPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="magazines/:topic/:article"
+                element={
+                  <Suspense fallback={<PageFallback />}>
+                    <MagazineArticlePage />
+                  </Suspense>
+                }
+              />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route path="*" element={<Home />} />
+            </Route>
+          </Routes>
+        </HashRouter>
+      </AISettingsProvider>
     </ThemeProvider>
   )
 }

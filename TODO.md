@@ -4,7 +4,7 @@
 - [x] 優化架構 md 變成動態載入
 - [x] md 支援 mermaid 圖表
 - [ ] nextjs
-- [ ] AI 語音
+- [x] AI 語音
 - [x] table 優化 手機可以左右滑動
 - [x] 黑色主題
 - [x] 換頁滾動到最上方
@@ -17,3 +17,4 @@
 - [x] ROUTINES.md 每日 brief 寫完後派 subagent 加 footnote + 產 transcript sidecar
 - [x] 優化建立詞，專注在寫ＭＤ黨案 不要碰專案程式
 - [x] 每篇文章要保留搜尋關鍵字 點擊後可以直接GOOGLE搜尋
+- [ ] 加入 zustand
