@@ -29,8 +29,11 @@ export function NewsDetail() {
         <p className="text-sm text-muted-foreground">
           這個連結可能已經失效。
         </p>
-        <Link to="/" className={cn(buttonVariants({ variant: "secondary" }))}>
-          回到首頁
+        <Link
+          to="/news"
+          className={cn(buttonVariants({ variant: "secondary" }))}
+        >
+          回到報紙列表
         </Link>
       </div>
     )
@@ -39,13 +42,13 @@ export function NewsDetail() {
   return (
     <article className="flex flex-col gap-6">
       <Link
-        to="/"
+        to="/news"
         className={cn(
           buttonVariants({ variant: "ghost", size: "sm" }),
           "w-fit -ml-3"
         )}
       >
-        ← 返回列表
+        ← 返回報紙列表
       </Link>
 
       <header className="flex flex-col gap-4">

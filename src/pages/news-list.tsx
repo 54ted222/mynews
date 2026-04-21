@@ -26,8 +26,11 @@ export function NewsList() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
+        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+          報紙
+        </p>
         <h1 className="font-serif text-3xl font-bold tracking-tight sm:text-4xl">
-          今日頭版
+          全部頭版
         </h1>
         <p className="text-sm text-muted-foreground">
           共 {items.length} 則報導，依日期新到舊排序。
