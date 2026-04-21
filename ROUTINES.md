@@ -188,11 +188,11 @@ summary: 一句話摘要。
 
 1. 產出 Markdown 內容（嚴守上方格式）
 2. 以 `Write` 工具寫入 `src/news/YYYY-MM-DD-daily-brief.md`
-3. 執行：
+3. **最後一步：直接 push 到 `main`**（不需等 review，推上去就會自動部署）：
    ```bash
    git add src/news/YYYY-MM-DD-daily-brief.md
    git commit -m "news: daily brief YYYY-MM-DD"
-   git push
+   git push origin main
    ```
 4. （可選）在 <https://github.com/54ted222/mynews/actions> 確認
    `Deploy to GitHub Pages` workflow 成功執行
