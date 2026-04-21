@@ -119,6 +119,22 @@
     --sidebar-ring: oklch(0.556 0 0);
 }
 
+:root {
+    --article-scale: 1;
+}
+
+:root[data-font-size="sm"] {
+    --article-scale: 0.9;
+}
+
+:root[data-font-size="lg"] {
+    --article-scale: 1.15;
+}
+
+.prose {
+    font-size: calc(1rem * var(--article-scale));
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

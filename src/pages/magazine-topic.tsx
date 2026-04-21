@@ -1,11 +1,12 @@
+import { use } from "react"
 import { Link, useParams } from "react-router-dom"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { ArticleMarkdown } from "@/components/article-markdown"
+import { SpeechPlayer } from "@/components/speech-player"
 import { cn } from "@/lib/utils"
-import { getMagazineTopic } from "@/lib/magazine"
+import { loadMagazineTopic } from "@/lib/magazine"
 
 function formatDate(iso: string): string {
   if (!iso) return ""
@@ -18,26 +19,27 @@ function formatDate(iso: string): string {
   })
 }
 
+function NotFound() {
+  return (
+    <div className="flex flex-col items-start gap-4">
+      <h1 className="text-2xl font-semibold">找不到這個主題</h1>
+      <p className="text-sm text-muted-foreground">這個連結可能已經失效。</p>
+      <Link
+        to="/magazines"
+        className={cn(buttonVariants({ variant: "secondary" }))}
+      >
+        回到雜誌列表
+      </Link>
+    </div>
+  )
+}
+
 export function MagazineTopicPage() {
   const { topic: topicSlug } = useParams<{ topic: string }>()
-  const topic = topicSlug ? getMagazineTopic(topicSlug) : undefined
+  if (!topicSlug) return <NotFound />
+  const topic = use(loadMagazineTopic(topicSlug))
+  if (!topic) return <NotFound />
 
-  if (!topic) {
-    return (
-      <div className="flex flex-col items-start gap-4">
-        <h1 className="text-2xl font-semibold">找不到這個主題</h1>
-        <p className="text-sm text-muted-foreground">
-          這個連結可能已經失效。
-        </p>
-        <Link
-          to="/magazines"
-          className={cn(buttonVariants({ variant: "secondary" }))}
-        >
-          回到雜誌列表
-        </Link>
-      </div>
-    )
-  }
 
   return (
     <article className="flex flex-col gap-8">
@@ -79,18 +81,12 @@ export function MagazineTopicPage() {
       </header>
 
       {topic.intro && (
-        <div
-          className="
-            prose prose-neutral max-w-none break-words
-            prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
-            prose-h1:text-2xl sm:prose-h1:text-3xl prose-h2:text-xl prose-h3:text-lg
-            prose-a:text-foreground prose-a:underline
-            dark:prose-invert
-          "
-        >
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {topic.intro}
-          </ReactMarkdown>
+        <div className="flex flex-col gap-4">
+          <SpeechPlayer
+            content={topic.intro}
+            transcript={topic.introTranscript}
+          />
+          <ArticleMarkdown content={topic.intro} />
         </div>
       )}
 

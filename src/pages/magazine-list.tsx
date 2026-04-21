@@ -1,3 +1,4 @@
+import { use } from "react"
 import { Link } from "react-router-dom"
 import {
   Card,
@@ -7,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { listMagazineTopics } from "@/lib/magazine"
+import { loadMagazineTopics } from "@/lib/magazine"
 
 function formatDate(iso: string): string {
   if (!iso) return ""
@@ -21,7 +22,7 @@ function formatDate(iso: string): string {
 }
 
 export function MagazineList() {
-  const topics = listMagazineTopics()
+  const topics = use(loadMagazineTopics())
 
   return (
     <div className="flex flex-col gap-6">

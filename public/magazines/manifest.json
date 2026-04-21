@@ -1,0 +1,48 @@
+{
+  "topics": [
+    {
+      "slug": "ai-productization-2026",
+      "articles": [
+        "01-market",
+        "02-technology",
+        "03-team",
+        "_index"
+      ],
+      "transcripts": []
+    },
+    {
+      "slug": "baas-supabase-2026",
+      "articles": [
+        "01-market-flywheel",
+        "02-postgres-core",
+        "03-ai-stack",
+        "04-billing-and-exit",
+        "_index"
+      ],
+      "transcripts": []
+    },
+    {
+      "slug": "saas-on-vercel-2026",
+      "articles": [
+        "01-market-lock-in",
+        "02-fluid-compute",
+        "03-ai-stack",
+        "04-billing-and-exit",
+        "_index"
+      ],
+      "transcripts": []
+    },
+    {
+      "slug": "taiwan-saas-payments",
+      "articles": [
+        "01-landscape",
+        "02-local-gateways",
+        "03-cross-border",
+        "04-app-stores",
+        "05-regulation",
+        "_index"
+      ],
+      "transcripts": []
+    }
+  ]
+}

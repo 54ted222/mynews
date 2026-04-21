@@ -1,3 +1,4 @@
+import { use } from "react"
 import { Link } from "react-router-dom"
 import {
   Card,
@@ -10,8 +11,8 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { listNews } from "@/lib/news"
-import { listMagazineTopics } from "@/lib/magazine"
+import { loadNewsMetaList } from "@/lib/news"
+import { loadMagazineTopics } from "@/lib/magazine"
 
 function formatDate(iso: string): string {
   if (!iso) return ""
@@ -25,8 +26,8 @@ function formatDate(iso: string): string {
 }
 
 export function Home() {
-  const latestNews = listNews().slice(0, 3)
-  const latestTopics = listMagazineTopics().slice(0, 3)
+  const latestNews = use(loadNewsMetaList()).slice(0, 3)
+  const latestTopics = use(loadMagazineTopics()).slice(0, 3)
   const todayLabel = formatDate(new Date().toISOString().slice(0, 10))
 
   return (

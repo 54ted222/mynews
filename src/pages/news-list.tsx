@@ -1,3 +1,4 @@
+import { use } from "react"
 import { Link } from "react-router-dom"
 import {
   Card,
@@ -7,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { listNews } from "@/lib/news"
+import { loadNewsMetaList } from "@/lib/news"
 
 function formatDate(iso: string): string {
   if (!iso) return ""
@@ -21,7 +22,7 @@ function formatDate(iso: string): string {
 }
 
 export function NewsList() {
-  const items = listNews()
+  const items = use(loadNewsMetaList())
 
   return (
     <div className="flex flex-col gap-6">

@@ -1,5 +1,6 @@
 import { NavLink, Link, Outlet } from "react-router-dom"
 import { Separator } from "@/components/ui/separator"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 
 const navItems = [
@@ -21,25 +22,29 @@ export function SiteLayout() {
               報紙每日出刊，雜誌主題專刊
             </span>
           </Link>
-          <nav className="flex items-center gap-4 text-sm">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={({ isActive }) =>
-                  cn(
-                    "transition-colors hover:text-foreground",
-                    isActive
-                      ? "font-medium text-foreground"
-                      : "text-muted-foreground"
-                  )
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
+          <div className="flex items-center gap-3">
+            <nav className="flex items-center gap-3 text-sm sm:gap-4">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    cn(
+                      "transition-colors hover:text-foreground",
+                      isActive
+                        ? "font-medium text-foreground"
+                        : "text-muted-foreground"
+                    )
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+            </nav>
+            <Separator orientation="vertical" className="hidden h-5 sm:block" />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 

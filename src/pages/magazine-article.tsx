@@ -1,10 +1,10 @@
+import { use } from "react"
 import { Link, useParams } from "react-router-dom"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
 import { buttonVariants } from "@/components/ui/button"
 import { SpeechPlayer } from "@/components/speech-player"
+import { ArticleMarkdown } from "@/components/article-markdown"
 import { cn } from "@/lib/utils"
-import { getMagazineArticle, getMagazineTopic } from "@/lib/magazine"
+import { loadMagazineArticle, loadMagazineTopic } from "@/lib/magazine"
 
 function formatDate(iso: string): string {
   if (!iso) return ""
@@ -17,34 +17,31 @@ function formatDate(iso: string): string {
   })
 }
 
+function NotFound() {
+  return (
+    <div className="flex flex-col items-start gap-4">
+      <h1 className="text-2xl font-semibold">找不到這篇文章</h1>
+      <p className="text-sm text-muted-foreground">這個連結可能已經失效。</p>
+      <Link
+        to="/magazines"
+        className={cn(buttonVariants({ variant: "secondary" }))}
+      >
+        回到雜誌列表
+      </Link>
+    </div>
+  )
+}
+
 export function MagazineArticlePage() {
   const { topic: topicSlug, article: articleSlug } = useParams<{
     topic: string
     article: string
   }>()
+  if (!topicSlug || !articleSlug) return <NotFound />
+  const article = use(loadMagazineArticle(topicSlug, articleSlug))
+  const topic = use(loadMagazineTopic(topicSlug))
+  if (!article || !topic) return <NotFound />
 
-  const article =
-    topicSlug && articleSlug
-      ? getMagazineArticle(topicSlug, articleSlug)
-      : undefined
-  const topic = topicSlug ? getMagazineTopic(topicSlug) : undefined
-
-  if (!article || !topic) {
-    return (
-      <div className="flex flex-col items-start gap-4">
-        <h1 className="text-2xl font-semibold">找不到這篇文章</h1>
-        <p className="text-sm text-muted-foreground">
-          這個連結可能已經失效。
-        </p>
-        <Link
-          to="/magazines"
-          className={cn(buttonVariants({ variant: "secondary" }))}
-        >
-          回到雜誌列表
-        </Link>
-      </div>
-    )
-  }
 
   const currentIndex = topic.articles.findIndex((a) => a.slug === article.slug)
   const prev = currentIndex > 0 ? topic.articles[currentIndex - 1] : undefined
@@ -79,25 +76,13 @@ export function MagazineArticlePage() {
             </>
           )}
         </div>
-        <SpeechPlayer content={article.content} />
+        <SpeechPlayer
+          content={article.content}
+          transcript={article.transcript}
+        />
       </header>
 
-      <div
-        className="
-          prose prose-neutral max-w-none break-words
-          prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
-          prose-h1:text-3xl sm:prose-h1:text-4xl prose-h2:text-2xl prose-h3:text-xl
-          prose-a:text-foreground prose-a:underline prose-a:break-words
-          prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
-          prose-pre:overflow-x-auto prose-pre:rounded-lg prose-pre:bg-muted prose-pre:text-foreground
-          prose-table:block prose-table:overflow-x-auto
-          dark:prose-invert
-        "
-      >
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {article.content}
-        </ReactMarkdown>
-      </div>
+      <ArticleMarkdown content={article.content} />
 
       {(prev || next) && (
         <nav className="mt-4 grid gap-3 border-t pt-6 sm:grid-cols-2">

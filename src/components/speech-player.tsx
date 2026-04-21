@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Pause, Play, Square } from "lucide-react"
+import { FileText, Pause, Play, Square } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { TranscriptDialog } from "@/components/transcript-dialog"
 import { markdownToPlainText } from "@/lib/markdown-text"
 
 type Status = "idle" | "playing" | "paused"
+type Source = "transcript" | "body"
 
 function pickVoice(
   voices: SpeechSynthesisVoice[]
@@ -21,12 +23,28 @@ function pickVoice(
 const supported =
   typeof window !== "undefined" && "speechSynthesis" in window
 
-export function SpeechPlayer({ content }: { content: string }) {
+export function SpeechPlayer({
+  content,
+  transcript,
+}: {
+  content: string
+  transcript?: string
+}) {
+  const hasTranscript = Boolean(transcript)
   const [status, setStatus] = useState<Status>("idle")
   const [voice, setVoice] = useState<SpeechSynthesisVoice | undefined>()
+  const [source, setSource] = useState<Source>(
+    hasTranscript ? "transcript" : "body"
+  )
+  const [dialogOpen, setDialogOpen] = useState(false)
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
 
-  const plainText = useMemo(() => markdownToPlainText(content), [content])
+  useEffect(() => {
+    setSource(hasTranscript ? "transcript" : "body")
+  }, [hasTranscript])
+
+  const raw = source === "transcript" && transcript ? transcript : content
+  const plainText = useMemo(() => markdownToPlainText(raw), [raw])
 
   useEffect(() => {
     if (!supported) return
@@ -96,14 +114,45 @@ export function SpeechPlayer({ content }: { content: string }) {
 
   if (!supported) {
     return (
-      <div className="text-xs text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
         此瀏覽器不支援朗讀功能
+        {hasTranscript && (
+          <>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setDialogOpen(true)}
+            >
+              <FileText />
+              <span>查看逐字稿</span>
+            </Button>
+            <TranscriptDialog
+              open={dialogOpen}
+              onClose={() => setDialogOpen(false)}
+              text={transcript ?? ""}
+            />
+          </>
+        )}
       </div>
     )
   }
 
   const isPlaying = status === "playing"
-  const label = isPlaying ? "暫停朗讀" : status === "paused" ? "繼續朗讀" : "朗讀全文"
+  const label =
+    isPlaying
+      ? "暫停朗讀"
+      : status === "paused"
+        ? "繼續朗讀"
+        : source === "transcript"
+          ? "朗讀逐字稿"
+          : "朗讀全文"
+
+  const switchSource = () => {
+    if (!hasTranscript) return
+    stop()
+    setSource((prev) => (prev === "transcript" ? "body" : "transcript"))
+  }
 
   return (
     <div
@@ -132,6 +181,43 @@ export function SpeechPlayer({ content }: { content: string }) {
           <Square />
           <span>停止</span>
         </Button>
+      )}
+      {hasTranscript && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={switchSource}
+          aria-pressed={source === "transcript"}
+          title={
+            source === "transcript"
+              ? "目前播放逐字稿，點擊切換為全文"
+              : "目前播放全文，點擊切換為逐字稿"
+          }
+        >
+          <span className="text-xs">
+            {source === "transcript" ? "來源：逐字稿" : "來源：全文"}
+          </span>
+        </Button>
+      )}
+      {hasTranscript && (
+        <>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setDialogOpen(true)}
+            aria-label="查看逐字稿"
+          >
+            <FileText />
+            <span>查看逐字稿</span>
+          </Button>
+          <TranscriptDialog
+            open={dialogOpen}
+            onClose={() => setDialogOpen(false)}
+            text={transcript ?? ""}
+          />
+        </>
       )}
     </div>
   )

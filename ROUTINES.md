@@ -1,7 +1,7 @@
 # ROUTINES · 每日創業情報
 
 本檔為 Claude Routines 的執行腳本。每日自動執行一次，產出一篇發佈於
-My News 網站（`src/news/`）的「每日創業情報」文章，推送後 GitHub Actions
+My News 網站（`public/news/`）的「每日創業情報」文章，推送後 GitHub Actions
 會自動部署到 <https://54ted222.github.io/mynews/>。
 
 ---
@@ -26,12 +26,12 @@ My News 網站（`src/news/`）的「每日創業情報」文章，推送後 Git
 
 ## 站點檔案規格（重要）
 
-本站從 `src/news/*.md` 讀取文章，必須完全符合以下格式才能正確顯示：
+本站從 `public/news/*.md` 讀取文章，必須完全符合以下格式才能正確顯示：
 
 ### 檔名
 
 ```
-src/news/YYYY-MM-DD-daily-brief.md
+public/news/YYYY-MM-DD-daily-brief.md
 ```
 
 - 日期前綴必填（供站點排序並作為 fallback 日期）
@@ -48,7 +48,7 @@ summary: 一句話摘要，約 40–60 字，用於首頁列表。
 ---
 ```
 
-解析規則（見 `src/lib/news.ts`）：
+解析規則（見 `src/lib/news.ts`（runtime fetch，見 CLAUDE.md））：
 
 - `tags` 以逗號分隔，自動切成陣列
 - `summary` 顯示在列表頁的 `CardDescription`
@@ -63,7 +63,7 @@ Frontmatter 之後空一行，第一個元素為 `# 每日創業情報 — YYYY-
 
 ## 連續性檢查（第一步必做）
 
-1. 列出 `src/news/` 資料夾，找出最近 3 篇檔名包含 `daily-brief` 的文章
+1. 列出 `public/news/` 資料夾，找出最近 3 篇檔名包含 `daily-brief` 的文章
 2. 讀取這些檔案，將其中提及的工具、點子、事件列為「已涵蓋清單」
 3. 本次產出時，若遇到相同主題，僅在「有新進展」時才納入，並於項目前標註
    - 🔄 追蹤更新
@@ -115,8 +115,8 @@ Frontmatter 之後空一行，第一個元素為 `# 每日創業情報 — YYYY-
 
 ## 輸出格式（嚴格遵守）
 
-產出單一 Markdown 檔案，路徑為 `src/news/YYYY-MM-DD-daily-brief.md`。
-如檔案已存在就加上流水號 `src/news/YYYY-MM-DD-daily-brief-2.md`。
+產出單一 Markdown 檔案，路徑為 `public/news/YYYY-MM-DD-daily-brief.md`。
+如檔案已存在就加上流水號 `public/news/YYYY-MM-DD-daily-brief-2.md`。
 
 完整範本：
 
@@ -187,18 +187,75 @@ summary: 一句話摘要。
 ## 交付步驟
 
 1. 產出 Markdown 內容（嚴守上方格式）
-2. 以 `Write` 工具寫入 `src/news/YYYY-MM-DD-daily-brief.md`
-3. **最後一步：直接 push 到 `main`**（不需等 review，推上去就會自動部署）：
+2. 以 `Write` 工具寫入 `public/news/YYYY-MM-DD-daily-brief.md`
+3. **派 subagent 做「註解 + 逐字稿」**（見下節）
+4. **最後一步：直接 push 到 `main`**（不需等 review，推上去就會自動部署）：
    ```bash
-   git add src/news/YYYY-MM-DD-daily-brief.md
+   git add public/news/YYYY-MM-DD-daily-brief.md public/news/YYYY-MM-DD-daily-brief.transcript.md
    git commit -m "news: daily brief YYYY-MM-DD"
    git push origin main
    ```
-4. （可選）在 <https://github.com/54ted222/mynews/actions> 確認
+5. （可選）在 <https://github.com/54ted222/mynews/actions> 確認
    `Deploy to GitHub Pages` workflow 成功執行
 
-> 💡 若 repo 已設定 auto-commit hook，步驟 3 可能自動處理；即使如此仍建議
+> 💡 若 repo 已設定 auto-commit hook，步驟 4 可能自動處理；即使如此仍建議
 > 明確執行以確保落地。
+
+---
+
+## 註解 + 逐字稿（正文寫完後必做）
+
+正文寫完後，**開一個 subagent**（`subagent_type: general-purpose`）做：
+
+1. 在原檔裡挑 **3–6 個**讀者可能不熟的**產品／公司／縮寫**加 GFM
+   footnote 註解。寫法：原文用 `術語[^slug]`、文末用 `[^slug]: 定義
+   （40–120 字）`；定義放在「📚 引用來源」段之前、用空白行分隔
+2. 另寫一份 `public/news/YYYY-MM-DD-daily-brief.transcript.md`：**純
+   文字**、沒有 frontmatter、**假設聽眾看不到畫面**，把表格與 bullet
+   口語化。長度約 1000–1800 字（約 5–8 分鐘），開場一句「今天想聊
+   …」、結尾一句「所以重點是…」
+
+Subagent 提示詞模板（自足）：
+
+```
+## 你的任務
+為一篇已經寫好的「每日創業情報」補兩件事：
+1. 在原檔內加 GFM footnote 註解（3–6 個專有名詞／公司／縮寫）
+2. 另寫一份 `<原檔>.transcript.md` 純文字逐字稿
+
+寫完即結束，不要動正文既有論點、數字、來源。
+
+## 原檔路徑
+public/news/YYYY-MM-DD-daily-brief.md
+
+## 原檔完整內容（貼入）
+---
+<daily-brief.md 全文>
+---
+
+### 工作 A：加 footnote 註解
+- 挑讀者可能不熟的術語／公司／產品／縮寫 3–6 個；常識詞（API、SaaS）
+  略過
+- 寫法：`術語[^slug]` + 文末 `[^slug]: 定義`（40–120 字、中性、獨立
+  可讀、不重述正文）
+- 定義擺在「📚 引用來源」段**之前**，與正文空白行分隔
+- 同一術語只在第一次出現時標註
+
+### 工作 B：寫逐字稿 sidecar
+- 路徑：public/news/YYYY-MM-DD-daily-brief.transcript.md
+- 純文字 md、**無 frontmatter、無 heading、無 `|` 表格**
+- 假設聽眾看不到畫面：把表格、bullet、程式碼用口語描述
+- 口語化：連接詞（所以、不過、簡單說）補好；標題編號省略或改成
+  「再來…」
+- 長度 1000–1800 字、約 5–8 分鐘；開場「今天想聊…」、收尾「重點是
+  …」
+
+## 交付
+- Edit 原檔加 footnote
+- Write 產出 sidecar
+- 回報 100 字內：加了哪些 footnote、逐字稿抓了哪條主線
+- 不 git、不改其他檔案、不 WebSearch
+```
 
 ---
 
@@ -211,12 +268,30 @@ summary: 一句話摘要。
 
 ---
 
+## mermaid 圖表（可選、謹慎用）
+
+站點支援 mermaid fenced code block（` ```mermaid `），但**每篇最多 1
+張**，只在圖解能比文字更快講清楚時才畫——例如產品關係、資金流、
+時序事件。一般表格／bullet 能交代的事就不要硬畫流程圖。語法範例：
+
+````md
+```mermaid
+flowchart LR
+  A[OpenAI] --> B[Codex]
+  A --> C[GPT-5.5]
+```
+````
+
+---
+
 ## 驗收檢查（產出前自審）
 
-- [ ] 檔名為 `src/news/YYYY-MM-DD-daily-brief.md`，日期正確
+- [ ] 檔名為 `public/news/YYYY-MM-DD-daily-brief.md`，日期正確
 - [ ] Frontmatter 4 個欄位齊全且格式正確（單行 `key: value`）
 - [ ] `summary` 約 40–60 字，能一句說清今日重點
 - [ ] 正文首元素為 `# 每日創業情報 — YYYY-MM-DD` H1
 - [ ] 所有表格結構完整（分隔線、欄數一致）
 - [ ] 每則資訊都有可追溯的來源連結
 - [ ] 未與過去 3 天重複（或有標註 🔄）
+- [ ] 已派 subagent 加 GFM footnote 註解（3–6 個）
+- [ ] `public/news/YYYY-MM-DD-daily-brief.transcript.md` 存在、無 frontmatter、口語化、1000–1800 字
