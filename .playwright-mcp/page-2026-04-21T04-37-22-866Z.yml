@@ -1,0 +1,47 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - link "My News 個人新聞頁 · 以 Markdown 撰寫" [ref=e6] [cursor=pointer]:
+        - /url: "#/"
+        - generic [ref=e7]: My News
+        - generic [ref=e8]: 個人新聞頁 · 以 Markdown 撰寫
+      - navigation [ref=e9]:
+        - link "最新" [ref=e10] [cursor=pointer]:
+          - /url: "#/"
+        - link "GitHub" [ref=e11] [cursor=pointer]:
+          - /url: https://github.com
+  - main [ref=e12]:
+    - article [ref=e56]:
+      - link "← 返回列表" [ref=e57] [cursor=pointer]:
+        - /url: "#/"
+      - generic [ref=e59]:
+        - time [ref=e60]: 2026年4月21日
+        - generic [ref=e61]: ·
+        - generic [ref=e62]:
+          - generic [ref=e63]: 站務
+          - generic [ref=e64]: 公告
+      - generic [ref=e65]:
+        - heading "歡迎來到我的新聞頁" [level=1] [ref=e66]
+        - paragraph [ref=e67]:
+          - text: 這是一個用
+          - strong [ref=e68]: React + Vite + shadcn/ui
+          - text: 打造的個人新聞頁，部署在 GitHub Pages 上。
+        - heading "特色" [level=2] [ref=e69]
+        - list [ref=e70]:
+          - listitem [ref=e71]:
+            - text: 新聞內容以 Markdown 撰寫，放在
+            - code [ref=e72]: src/news/
+            - text: 資料夾
+          - listitem [ref=e73]: 自動從檔名解析日期，並依日期排序
+          - listitem [ref=e74]: 支援 frontmatter 標題、摘要與標籤
+          - listitem [ref=e75]: 使用 shadcn/ui 元件，支援深色模式
+        - heading "如何新增文章" [level=2] [ref=e76]
+        - paragraph [ref=e77]:
+          - text: 在
+          - code [ref=e78]: src/news/
+          - text: 底下新增一個
+          - code [ref=e79]: .md
+          - text: 檔即可，格式如下：
+        - code [ref=e81]: "--- title: 標題 date: 2026-04-21 tags: 標籤1, 標籤2 summary: 摘要 --- 正文內容……"
+  - separator [ref=e54]
+  - contentinfo [ref=e55]: © 2026 My News · Built with React, Vite & shadcn/ui
