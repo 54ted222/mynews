@@ -3,6 +3,7 @@ title: 台灣團隊的兩條分發路
 order: 4
 date: 2026-04-22
 summary: 對內接 SMB 與數發部百億 AI 補助，對外走全球 niche 英語內容——以 91APP、Appier、Pieter Levels 三種路徑為對照，釐清你的 GTM 該站哪邊。
+keywords: 數發部 百億 AI 投資方案 首年 5 家, TCloud 雲市集 3 萬點數 中小企業, 91APP 6741 iCHEF 收購 US$32M, Appier TSE 4180 FY25 437 億, Pieter Levels PhotoAI 150K MRR, Merchant of Record Paddle 2026 Taiwan, LemonSqueezy Stripe acquisition 2026, Reddit lead generation SaaS 2026, 台股 創新板 TIB 獨角獸 孵化器, Crunchbase venture Q1 2026 AI concentration
 ---
 
 # 台灣團隊的兩條分發路

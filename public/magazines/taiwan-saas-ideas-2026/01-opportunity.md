@@ -3,6 +3,7 @@ title: 2026 年台灣 SaaS 還有哪些題目可做
 order: 1
 date: 2026-04-22
 summary: 募資跌 98.9% 不代表沒機會——四個還沒被吃完的切角：SMB 垂直、製造業 AI agent、全球 niche、一人產品，以及怎麼判斷自己在哪條線。
+keywords: Taiwan startup funding 2026 Q1 Tracxn, 91APP iCHEF acquisition 2025, GoFreight Series A ARR 2026, Morale AI 製造業 台灣 案例, awoo 16000 客戶 MarTech, Pieter Levels PhotoAI $138K MRR, YC W26 solo founder 分布, 台灣 中小企業 數位轉型 PwC 2026, Skiesoft 醫療 AI scribe YC, Appier FY25 Q3 earnings
 ---
 
 # 2026 年台灣 SaaS 還有哪些題目可做

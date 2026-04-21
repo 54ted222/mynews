@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { SpeechPlayer } from "@/components/speech-player"
 import { ArticleMarkdown } from "@/components/article-markdown"
+import { KeywordSearchList } from "@/components/keyword-search-list"
 import { cn } from "@/lib/utils"
 import { loadNewsItem } from "@/lib/news"
 
@@ -69,6 +70,7 @@ export function NewsDetail() {
           )}
         </div>
         <SpeechPlayer content={item.content} transcript={item.transcript} />
+        <KeywordSearchList keywords={item.keywords} />
       </header>
 
       <ArticleMarkdown content={item.content} />

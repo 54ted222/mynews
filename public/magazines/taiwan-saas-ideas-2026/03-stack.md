@@ -3,6 +3,7 @@ title: 一個台灣開發者的 2026 SaaS stack
 order: 3
 date: 2026-04-22
 summary: 前端、後端、AI、付款、觀察——把 Vercel + Supabase + Claude API + Paddle 的現代棧拆到月預算 $100 / $500 / $2000 三級，哪些該自建、哪些絕對外包。
+keywords: Vercel Pro pricing 2026 bandwidth, Supabase free tier 500MB 50K MAU, Claude Opus 4.7 tokenizer change 2026-04, Anthropic prompt caching cache read 0.1x, Paddle MoR 5% fee indie SaaS, Stripe MoR private beta 2026, Resend vs SendGrid 2026 free tier, PostHog free 1M events indie, Cloudflare R2 pricing no egress, Clerk vs WorkOS 2026 MAU pricing
 ---
 
 # 一個台灣開發者的 2026 SaaS stack

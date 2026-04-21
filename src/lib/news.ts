@@ -6,6 +6,7 @@ export type NewsMeta = {
   date: string
   tags: string[]
   summary: string
+  keywords: string[]
   hasTranscript: boolean
 }
 
@@ -35,6 +36,7 @@ function toItem(
     date: data.date ?? dateFromSlug(slug) ?? "",
     tags: parseTags(data.tags),
     summary: data.summary ?? "",
+    keywords: parseTags(data.keywords),
     hasTranscript: Boolean(transcript),
     content,
     transcript,

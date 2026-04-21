@@ -18,6 +18,7 @@ export type MagazineArticleMeta = {
   order: number
   date: string
   summary: string
+  keywords: string[]
   hasTranscript: boolean
 }
 
@@ -103,6 +104,7 @@ async function loadTopic(topic: ManifestTopic): Promise<LoadedTopic> {
         order: Number.isFinite(order) ? order : Number.MAX_SAFE_INTEGER,
         date: data.date ?? "",
         summary: data.summary ?? "",
+        keywords: parseTags(data.keywords),
         hasTranscript,
         content,
         transcript,

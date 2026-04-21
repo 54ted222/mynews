@@ -45,6 +45,7 @@ title: 每日創業情報 — YYYY-MM-DD
 date: YYYY-MM-DD
 tags: 創業情報, AI 產業, SaaS
 summary: 一句話摘要，約 40–60 字，用於首頁列表。
+keywords: 搜尋字串1, 搜尋字串2, ...
 ---
 ```
 
@@ -52,6 +53,10 @@ summary: 一句話摘要，約 40–60 字，用於首頁列表。
 
 - `tags` 以逗號分隔，自動切成陣列
 - `summary` 顯示在列表頁的 `CardDescription`
+- `keywords`：今天實際做 WebSearch 時用過的查詢字串（5–10 組、逗號分隔）。
+  前端會渲染成可點的 chip，點了直接跳 Google——讓讀者順著你的研究路徑
+  自己再查。關鍵字要具體（例如「Replit Agent 3 pricing Reddit 2026」，
+  而不是「AI 編碼工具」）。中英皆可，以實際查得出新結果為準
 - 不支援多行值、YAML 陣列語法；維持單行 `key: value`
 
 ### 正文
@@ -76,6 +81,11 @@ Frontmatter 之後空一行，第一個元素為 `# 每日創業情報 — YYYY-
 ## 任務
 
 使用 WebSearch / WebFetch 彙整以下四大主題。
+
+> **研究時請把查詢字串記下來**——每次 WebSearch 用過的 query 都值得留存。
+> 最後寫進 frontmatter 的 `keywords` 欄位（5–10 組、逗號分隔），讀者看文
+> 章時可以直接點關鍵字跳 Google 再查。挑「具體、會查出新結果」的 query，
+> 不要塞通用詞。
 
 ### 資料來源優先順序
 
@@ -126,6 +136,7 @@ title: 每日創業情報 — YYYY-MM-DD
 date: YYYY-MM-DD
 tags: 創業情報, AI 產業, SaaS
 summary: 一句話摘要。
+keywords: 搜尋字串1, 搜尋字串2, 搜尋字串3, ...
 ---
 
 # 每日創業情報 — YYYY-MM-DD
@@ -249,6 +260,8 @@ public/news/YYYY-MM-DD-daily-brief.md
 - Edit 原檔加 footnote
 - Write 產出 sidecar
 - 回報 100 字內：加了哪些 footnote、逐字稿抓了哪條主線
+- **嚴格只改 `public/news/` 底下的 `.md` 檔**——不要動 `src/`、
+  TypeScript / tsx / 設定檔、`package.json`，不要跑 `npm` 指令
 - 不 git、不改其他檔案、不 WebSearch
 ```
 

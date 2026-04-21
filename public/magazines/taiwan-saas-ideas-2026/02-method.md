@@ -3,6 +3,7 @@ title: 從 idea 到 ship 的 2026 版方法學
 order: 2
 date: 2026-04-22
 summary: vibe coding、context engineering、AI agent 作為員工——拆解 Cursor / Claude Code / Lovable / Replit 在驗證、原型、產品三階段的分工與放棄時機。
+keywords: Cursor CLI Plan Mode Cloud Handoff 2026, Claude Code Agent Teams v2.1.32 release, Lovable security BOLA Taimur Khan, Trend Micro vibecoding 5600 apps scan, Moltbook 2026-01 data leak, context engineering CLAUDE.md best practice, MCP Model Context Protocol Perplexity critique, Pragmatic Engineer 2026 most loved AI coding, Replit Agent 3 valuation $9B, Bolt.new WebContainer Lovable Supabase
 ---
 
 # 從 idea 到 ship 的 2026 版方法學

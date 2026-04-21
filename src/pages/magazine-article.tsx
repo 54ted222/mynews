@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom"
 import { buttonVariants } from "@/components/ui/button"
 import { SpeechPlayer } from "@/components/speech-player"
 import { ArticleMarkdown } from "@/components/article-markdown"
+import { KeywordSearchList } from "@/components/keyword-search-list"
 import { cn } from "@/lib/utils"
 import { loadMagazineArticle, loadMagazineTopic } from "@/lib/magazine"
 
@@ -80,6 +81,7 @@ export function MagazineArticlePage() {
           content={article.content}
           transcript={article.transcript}
         />
+        <KeywordSearchList keywords={article.keywords} />
       </header>
 
       <ArticleMarkdown content={article.content} />
