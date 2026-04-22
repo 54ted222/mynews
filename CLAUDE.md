@@ -114,12 +114,31 @@ summary: 一句摘要（用於列表頁）
   macOS 產的 lock file 會缺 Linux 平台的 `@emnapi/*` optional deps，`npm ci` 會失敗
 - Settings → Pages 的 Source 必須設為 **GitHub Actions**
 
-## 日常 Routine
+## 內容產出腳本（`prompts/`）
 
-`ROUTINES.md` 是每日自動化腳本（Claude Routines），會產出一篇
-`public/news/YYYY-MM-DD-daily-brief.md`。寫入時必須符合上方「Markdown
-動態載入」的 frontmatter 規格。寫完 push 到 main 後 CI 會自動重新產
-manifest 並部署。
+內容產出相關的四個檔案集中在 `prompts/`，扮演不同角色、彼此串連：
+
+- **`prompts/TOPIC.md`**：主題池**資料檔**（不是腳本）。四層漏斗——
+  `interest`（讀者輪廓）、`suggested`（20 條快照）、`prepared`（10 條細化）、
+  `next`（1 條下期題目）。**直接跑會沒事發生；要透過 PREPARE/MAGAZINES 讀寫**
+- **`prompts/PREPARE.md`**：主題管線腳本。讀寫 `TOPIC.md`，由下往上補——
+  下期不足就從 prepared 挑一個細化搬過來、prepared 不夠就從 suggested 補、
+  suggested 不夠就依 interest + WebSearch 擴充。執行前有「主題池已滿就
+  直接結束」的早退檢查
+- **`prompts/MAGAZINES.md`**：雜誌專刊腳本。使用者沒提供題目時會從
+  `TOPIC.md` 的 `next topic` 自動取用並**立刻清空回 placeholder**（避免下
+  次重複）。三階段：階段一主 agent 策劃 `_index.md`、階段二派 subagent
+  並行寫各篇、階段三派單一 subagent 補 GFM footnote + 語音逐字稿 sidecar。
+  產出 `public/magazines/<topic-slug>/`
+- **`prompts/ROUTINES.md`**：每日報紙腳本（Claude Routines 自動跑一次）。
+  產出 `public/news/YYYY-MM-DD-daily-brief.md` 與對應 transcript。**日期
+  一定要實跑 `TZ=Asia/Taipei date +%Y-%m-%d` 取得**，不要從 context 推測
+  （曾發生沿用前一天日期導致整批 brief 被錯誤歸日）。與主題池無耦合
+
+三支 `.md` 腳本通則：開寫前必 WebSearch / WebFetch、嚴禁憑記憶寫；時間
+敏感資訊標註截至日期；寫入前需符合「Markdown 動態載入」的 frontmatter
+規格。push 到 `main` 後 GitHub Actions 會自動重產 manifest 並部署——
+**`public/**/manifest.json` 一定要一起 `git add`**，否則部署後看起來像沒發刊。
 
 ## 注意事項
 
