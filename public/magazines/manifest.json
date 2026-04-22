@@ -60,6 +60,23 @@
         "_index"
       ],
       "transcripts": []
+    },
+    {
+      "slug": "vibe-coding-limits-2026",
+      "articles": [
+        "01-sweet-spot",
+        "02-spec-driven-workflow",
+        "03-hangover-and-guardrails",
+        "04-trust-and-gtm",
+        "_index"
+      ],
+      "transcripts": [
+        "01-sweet-spot",
+        "02-spec-driven-workflow",
+        "03-hangover-and-guardrails",
+        "04-trust-and-gtm",
+        "_index"
+      ]
     }
   ]
 }

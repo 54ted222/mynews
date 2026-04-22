@@ -104,20 +104,7 @@
 
 ## 下期主題 next topic
 
-### 一人 Vibe Coding 能吃下多大專案？2026 的成敗分界線與新規則
-
-關鍵字：vibe coding Karpathy 2025 definition, vibe coding solo founder SaaS revenue 2026, vibe coding hangover technical debt enterprise, Claude Code Cursor spec driven development 2026, AI generated code bug density edge case, Payout Connor Burd 20k MRR, Lovable security vulnerability vibe coding, arxiv 2512.11922 vibe coding flow debt
-
-短文：Vibe coding 從 Karpathy 2025 年 2 月那則 tweet 走到 2026 年 4 月，已經不再只是「打打看」的 meme——Indie Hackers 估計 2026 Q1 有 34% 的新 micro-SaaS 由沒有程式基礎的創辦人送出，當中不乏 Payout（Connor Burd，14 天上線、50 天做到 $20K MRR）這類真實案例。對我們這位「會 JS 前後端、想做 SaaS」的讀者而言誘惑很清楚：用 AI 槓桿把腦中點子在 4 週內搬上線。但另一邊是「hangover」——Harvard Gazette 2026-04-01 整理出 AI 產出的代碼在錯誤處理路徑 bug 密度高出人手 35–40%，Lovable 1,645 個 app 裡有 170 個洩漏個資，arxiv 2512.11922 把整個現象歸納成 flow-debt tradeoff。本期不重做「vibe coding 是什麼」的科普，而是鎖定一個更具體的問題：**一位 JS 全端工程師，用 AI 槓桿到底能吃下多大的專案？哪一條線過去後就要改寫、該怎麼改寫？** 目前規劃四條主線：（一）獨立開發者的甜蜜區與天花板，用 Payout / MiroFish / Lovable 三個真實案例拆骨架；（二）spec-driven development + Claude Code 搭 Cursor 的 2026 實戰流程，回答「大型專案」怎麼不崩；（三）從 MVP 到第一個付費版本要避開哪些 hangover，涵蓋依賴幻覺、安全漏洞、維護悖論；（四）行銷角度怎麼講一個「AI 寫的 SaaS」故事、信任如何建立、定價是否要揭露 AI 占比。目標是讓讀者讀完後有一條清楚的「現在能做／該收手／該改寫」決策線。
-
-參考來源：
-
-1. [Vibe coding — Wikipedia](https://en.wikipedia.org/wiki/Vibe_coding) — Wikipedia 條目，彙整 2025–2026 定義與爭議
-2. [Vibe Coding in Practice: Flow, Technical Debt, and Guidelines for Sustainable Use](https://arxiv.org/abs/2512.11922) — Waseem et al., arXiv, 2025-12-11
-3. [Vibe coding may offer insight into our AI future](https://news.harvard.edu/gazette/story/2026/04/vibe-coding-may-offer-insight-into-our-ai-future/) — Harvard Gazette, 2026-04-01
-4. [Vibe coding could cause catastrophic 'explosions' in 2026](https://thenewstack.io/vibe-coding-could-cause-catastrophic-explosions-in-2026/) — The New Stack, 2026
-5. [Using spec-driven development with Claude Code](https://heeki.medium.com/using-spec-driven-development-with-claude-code-4a1ebe5d9f29) — Heeki Park, Medium, 2026-03
-6. [AI SaaS Solo Founder Success Stories (2026)](https://crazyburst.com/ai-saas-solo-founder-success-stories-2026/) — Crazyburst, 2026
+- <完整的主題名稱> : <概述主題內容的 1–2 句話>
 
 ## 日報主題 daily brief
 
