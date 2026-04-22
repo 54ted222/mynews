@@ -238,6 +238,9 @@ export function SettingsPage() {
                   </option>
                 ))}
               </select>
+              <span className={fieldHintClasses}>
+                長文章會自動分段送出，分段串接以 MP3 最穩定，建議保留預設值。
+              </span>
             </label>
 
             <label className={labelClasses}>

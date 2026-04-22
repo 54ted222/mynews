@@ -33,6 +33,7 @@ export function MermaidDiagram({ code }: { code: string }) {
 
   useEffect(() => {
     let alive = true
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setState({ kind: "loading" })
     renderMermaid(code, scheme)
       .then((svg) => {

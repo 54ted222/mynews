@@ -5,18 +5,8 @@ import { SpeechPlayer } from "@/components/speech-player"
 import { ArticleMarkdown } from "@/components/article-markdown"
 import { KeywordSearchList } from "@/components/keyword-search-list"
 import { cn } from "@/lib/utils"
+import { formatDate } from "@/lib/format"
 import { loadMagazineArticle, loadMagazineTopic } from "@/lib/magazine"
-
-function formatDate(iso: string): string {
-  if (!iso) return ""
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return iso
-  return d.toLocaleDateString("zh-TW", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-}
 
 function NotFound() {
   return (
@@ -79,6 +69,7 @@ export function MagazineArticlePage() {
         </div>
         <SpeechPlayer
           slug={`magazine-${topic.slug}-${article.slug}`}
+          title={`${topic.title}・${article.title}`}
           content={article.content}
           transcript={article.transcript}
         />

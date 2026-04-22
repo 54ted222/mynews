@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   AlertCircle,
+  Download,
   FileText,
+  Gauge,
   Loader2,
   Pause,
   Play,
@@ -13,18 +15,22 @@ import {
 import { Button } from "@/components/ui/button"
 import { TranscriptDialog } from "@/components/transcript-dialog"
 import { markdownToPlainText } from "@/lib/markdown-text"
-import { aiSettingsHash } from "@/lib/ai-settings"
 import { useAISettings } from "@/lib/ai-settings-context"
-import {
-  deleteCachedAudio,
-  getCachedAudio,
-  putCachedAudio,
-} from "@/lib/audio-cache"
-import { generateSpeech } from "@/lib/openai-tts"
+import { useAiAudio } from "@/lib/use-ai-audio"
 
-type Status = "idle" | "playing" | "paused" | "loading"
+type Status = "idle" | "playing" | "paused"
 type Source = "transcript" | "body"
 type Engine = "ai" | "browser"
+
+const SPEED_OPTIONS = [0.75, 1, 1.25, 1.5, 2] as const
+
+const EXT_BY_FORMAT: Record<string, string> = {
+  mp3: "mp3",
+  wav: "wav",
+  opus: "ogg",
+  aac: "aac",
+  flac: "flac",
+}
 
 function pickVoice(
   voices: SpeechSynthesisVoice[]
@@ -39,12 +45,11 @@ function pickVoice(
   return zh ?? voices[0]
 }
 
-function djb2(s: string): string {
-  let hash = 5381
-  for (let i = 0; i < s.length; i++) {
-    hash = ((hash << 5) + hash) ^ s.charCodeAt(i)
-  }
-  return (hash >>> 0).toString(16)
+function sanitizeFilename(name: string): string {
+  return name
+    .replace(/[\\/:*?"<>|]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
 }
 
 const supported =
@@ -54,10 +59,12 @@ export function SpeechPlayer({
   content,
   transcript,
   slug,
+  title,
 }: {
   content: string
   transcript?: string
   slug?: string
+  title?: string
 }) {
   const hasTranscript = Boolean(transcript)
   const { settings, hasApiKey } = useAISettings()
@@ -69,32 +76,21 @@ export function SpeechPlayer({
     hasTranscript ? "transcript" : "body"
   )
   const [dialogOpen, setDialogOpen] = useState(false)
-
-  const [aiUrl, setAiUrl] = useState<string | null>(null)
-  const [aiCached, setAiCached] = useState(false)
-  const [generating, setGenerating] = useState(false)
-  const [genError, setGenError] = useState<string | null>(null)
+  const [playbackRate, setPlaybackRate] = useState<number>(1)
 
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
-  const aiUrlRef = useRef<string | null>(null)
 
   useEffect(() => {
-    aiUrlRef.current = aiUrl
-  }, [aiUrl])
-
-  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSource(hasTranscript ? "transcript" : "body")
   }, [hasTranscript])
 
   const raw = source === "transcript" && transcript ? transcript : content
   const plainText = useMemo(() => markdownToPlainText(raw), [raw])
 
-  const cacheKey = slug ? `${slug}::${source}` : null
-  const signature = useMemo(
-    () => `${aiSettingsHash(settings)}::${djb2(plainText)}`,
-    [settings, plainText]
-  )
+  const audioSlug = slug ? `${slug}::${source}` : null
+  const ai = useAiAudio(audioSlug, plainText)
 
   useEffect(() => {
     if (!supported) return
@@ -124,103 +120,60 @@ export function SpeechPlayer({
     setStatus("idle")
   }, [])
 
+  // 內容換頁／簽章變動時，先停掉目前播放
   useEffect(() => {
-    let cancelled = false
-    queueMicrotask(() => {
-      if (cancelled) return
-      if (aiUrlRef.current) {
-        URL.revokeObjectURL(aiUrlRef.current)
-        aiUrlRef.current = null
-      }
-      setAiUrl(null)
-      setAiCached(false)
-      stop()
-    })
-
-    if (!cacheKey) return
-    void (async () => {
-      const entry = await getCachedAudio(cacheKey, signature)
-      if (cancelled || !entry) return
-      const url = URL.createObjectURL(entry.blob)
-      aiUrlRef.current = url
-      setAiUrl(url)
-      setAiCached(true)
-    })()
-
-    return () => {
-      cancelled = true
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cacheKey, signature])
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    stop()
+  }, [audioSlug, stop])
 
   useEffect(() => {
     return () => {
       if (supported) window.speechSynthesis.cancel()
-      if (aiUrlRef.current) {
-        URL.revokeObjectURL(aiUrlRef.current)
-        aiUrlRef.current = null
-      }
     }
   }, [])
 
-  const generateAi = useCallback(
-    async (force = false) => {
-      if (!hasApiKey || !cacheKey || !plainText) return
-      stop()
-      setGenerating(true)
-      setGenError(null)
-      try {
-        if (force) {
-          await deleteCachedAudio(slug ?? "", signature)
-        }
-        const result = await generateSpeech(plainText, settings)
-        await putCachedAudio(cacheKey, signature, result.blob, result.mime)
-        if (aiUrlRef.current) URL.revokeObjectURL(aiUrlRef.current)
-        const url = URL.createObjectURL(result.blob)
-        aiUrlRef.current = url
-        setAiUrl(url)
-        setAiCached(true)
-      } catch (err) {
-        setGenError(err instanceof Error ? err.message : "生成失敗")
-      } finally {
-        setGenerating(false)
+  // AI engine 即時套用速度；browser engine 在 onChangeRate 中重啟
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.playbackRate = playbackRate
+    }
+  }, [playbackRate])
+
+  const playBrowser = useCallback(
+    (rate: number) => {
+      if (!supported || !plainText) return
+      const synth = window.speechSynthesis
+
+      if (status === "paused" && engine === "browser") {
+        synth.resume()
+        setStatus("playing")
+        return
       }
+
+      synth.cancel()
+      const utter = new SpeechSynthesisUtterance(plainText)
+      utter.lang = voice?.lang ?? "zh-TW"
+      if (voice) utter.voice = voice
+      utter.rate = rate
+      utter.pitch = 1
+      utter.onend = () => {
+        utteranceRef.current = null
+        setStatus("idle")
+      }
+      utter.onerror = () => {
+        utteranceRef.current = null
+        setStatus("idle")
+      }
+      utteranceRef.current = utter
+      synth.speak(utter)
+      setEngine("browser")
+      setStatus("playing")
     },
-    [cacheKey, hasApiKey, plainText, settings, signature, slug, stop]
+    [engine, plainText, status, voice]
   )
 
-  const playBrowser = useCallback(() => {
-    if (!supported || !plainText) return
-    const synth = window.speechSynthesis
-
-    if (status === "paused" && engine === "browser") {
-      synth.resume()
-      setStatus("playing")
-      return
-    }
-
-    synth.cancel()
-    const utter = new SpeechSynthesisUtterance(plainText)
-    utter.lang = voice?.lang ?? "zh-TW"
-    if (voice) utter.voice = voice
-    utter.rate = 1
-    utter.pitch = 1
-    utter.onend = () => {
-      utteranceRef.current = null
-      setStatus("idle")
-    }
-    utter.onerror = () => {
-      utteranceRef.current = null
-      setStatus("idle")
-    }
-    utteranceRef.current = utter
-    synth.speak(utter)
-    setEngine("browser")
-    setStatus("playing")
-  }, [engine, plainText, status, voice])
-
   const playAi = useCallback(() => {
-    const url = aiUrl
+    const url = ai.url
     if (!url) return
     let audio = audioRef.current
     if (!audio) {
@@ -239,17 +192,18 @@ export function SpeechPlayer({
     if (audio.src !== url) {
       audio.src = url
     }
+    audio.playbackRate = playbackRate
     setEngine("ai")
     void audio.play().catch(() => setStatus("idle"))
-  }, [aiUrl])
+  }, [ai.url, playbackRate])
 
   const play = useCallback(() => {
-    if (aiUrl) {
+    if (ai.url) {
       playAi()
     } else {
-      playBrowser()
+      playBrowser(playbackRate)
     }
-  }, [aiUrl, playAi, playBrowser])
+  }, [ai.url, playAi, playBrowser, playbackRate])
 
   const pause = useCallback(() => {
     if (status !== "playing") return
@@ -264,23 +218,39 @@ export function SpeechPlayer({
     }
   }, [engine, status])
 
+  // AI engine 用 audio.playbackRate 立即生效；
+  // 瀏覽器 TTS 不支援播放中改速度，下次播放才套用。
+  const onChangeRate = (next: number) => {
+    setPlaybackRate(next)
+  }
+
   const switchSource = () => {
     if (!hasTranscript) return
     stop()
     setSource((prev) => (prev === "transcript" ? "body" : "transcript"))
   }
 
-  const removeAi = async () => {
-    if (!cacheKey) return
+  const onGenerate = (force = false) => {
+    stop()
+    void ai.generate(force)
+  }
+
+  const onRemove = async () => {
     if (!window.confirm("刪除這段已快取的 AI 語音？")) return
     stop()
-    await deleteCachedAudio(slug ?? "", signature)
-    if (aiUrlRef.current) {
-      URL.revokeObjectURL(aiUrlRef.current)
-      aiUrlRef.current = null
-    }
-    setAiUrl(null)
-    setAiCached(false)
+    await ai.remove()
+  }
+
+  const onDownload = () => {
+    if (!ai.url) return
+    const ext = EXT_BY_FORMAT[settings.format] ?? "mp3"
+    const base = sanitizeFilename(title ?? slug ?? "audio") || "audio"
+    const a = document.createElement("a")
+    a.href = ai.url
+    a.download = `${base}.${ext}`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
   }
 
   if (!supported && !hasApiKey) {
@@ -310,7 +280,7 @@ export function SpeechPlayer({
   }
 
   const isPlaying = status === "playing"
-  const usingAi = Boolean(aiUrl)
+  const usingAi = Boolean(ai.url)
   const playLabel = isPlaying
     ? "暫停"
     : status === "paused"
@@ -321,113 +291,84 @@ export function SpeechPlayer({
           ? "朗讀逐字稿"
           : "朗讀全文"
 
+  const showAiRow = ai.enabled
+  const generatingLabel =
+    ai.progress && ai.progress.total > 1
+      ? `生成中 ${ai.progress.done}/${ai.progress.total}`
+      : "生成中…"
+
   return (
     <div
-      className="flex flex-wrap items-center gap-2"
+      className="flex flex-col gap-2"
       role="group"
       aria-label="文章朗讀"
     >
-      <Button
-        type="button"
-        variant={usingAi ? "default" : "outline"}
-        size="sm"
-        onClick={isPlaying ? pause : play}
-        aria-label={playLabel}
-        disabled={!plainText || (!supported && !usingAi)}
-      >
-        {isPlaying ? <Pause /> : <Play />}
-        <span>{playLabel}</span>
-      </Button>
-
-      {status !== "idle" && (
+      {/* 播放列 */}
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           type="button"
-          variant="ghost"
+          variant={usingAi ? "default" : "outline"}
           size="sm"
-          onClick={stop}
-          aria-label="停止朗讀"
+          onClick={isPlaying ? pause : play}
+          aria-label={playLabel}
+          disabled={!plainText || (!supported && !usingAi)}
         >
-          <Square />
-          <span>停止</span>
+          {isPlaying ? <Pause /> : <Play />}
+          <span>{playLabel}</span>
         </Button>
-      )}
 
-      {hasApiKey && cacheKey && !aiCached && (
-        <Button
-          type="button"
-          variant="secondary"
-          size="sm"
-          onClick={() => generateAi(false)}
-          disabled={generating || !plainText}
-          aria-label="生成 AI 語音"
-          title={`使用 ${settings.model} / ${settings.voice} 生成`}
-        >
-          {generating ? <Loader2 className="animate-spin" /> : <Sparkles />}
-          <span>{generating ? "生成中…" : "生成 AI 語音"}</span>
-        </Button>
-      )}
-
-      {hasApiKey && cacheKey && aiCached && (
-        <>
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
-            <Sparkles className="size-3" /> AI 語音
-          </span>
+        {status !== "idle" && (
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => generateAi(true)}
-            disabled={generating}
-            aria-label="重新生成 AI 語音"
-            title="使用目前設定重新生成"
+            onClick={stop}
+            aria-label="停止朗讀"
           >
-            {generating ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <RefreshCcw />
-            )}
-            <span>{generating ? "生成中" : "更新"}</span>
+            <Square />
+            <span>停止</span>
           </Button>
+        )}
+
+        <label
+          className="inline-flex h-7 items-center gap-1 rounded-md border border-border bg-background px-2 text-xs text-muted-foreground hover:bg-muted"
+          title="播放速度"
+        >
+          <Gauge className="size-3.5" />
+          <select
+            value={playbackRate}
+            onChange={(e) => onChangeRate(Number(e.target.value))}
+            className="cursor-pointer bg-transparent text-xs text-foreground outline-none"
+            aria-label="播放速度"
+          >
+            {SPEED_OPTIONS.map((s) => (
+              <option key={s} value={s}>
+                {s.toString().replace(/\.0$/, "")}x
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {hasTranscript && (
           <Button
             type="button"
             variant="ghost"
-            size="icon-sm"
-            onClick={removeAi}
-            aria-label="刪除 AI 語音快取"
-            title="刪除這段 AI 語音快取"
+            size="sm"
+            onClick={switchSource}
+            aria-pressed={source === "transcript"}
+            title={
+              source === "transcript"
+                ? "目前播放逐字稿，點擊切換為全文"
+                : "目前播放全文，點擊切換為逐字稿"
+            }
           >
-            <Trash2 />
+            <span className="text-xs">
+              {source === "transcript" ? "來源：逐字稿" : "來源：全文"}
+            </span>
           </Button>
-        </>
-      )}
+        )}
 
-      {genError && (
-        <span className="inline-flex items-center gap-1 text-xs text-destructive">
-          <AlertCircle className="size-3.5" /> {genError}
-        </span>
-      )}
-
-      {hasTranscript && (
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={switchSource}
-          aria-pressed={source === "transcript"}
-          title={
-            source === "transcript"
-              ? "目前播放逐字稿，點擊切換為全文"
-              : "目前播放全文，點擊切換為逐字稿"
-          }
-        >
-          <span className="text-xs">
-            {source === "transcript" ? "來源：逐字稿" : "來源：全文"}
-          </span>
-        </Button>
-      )}
-
-      {hasTranscript && (
-        <>
+        {hasTranscript && (
           <Button
             type="button"
             variant="ghost"
@@ -438,12 +379,90 @@ export function SpeechPlayer({
             <FileText />
             <span>查看逐字稿</span>
           </Button>
-          <TranscriptDialog
-            open={dialogOpen}
-            onClose={() => setDialogOpen(false)}
-            text={transcript ?? ""}
-          />
-        </>
+        )}
+      </div>
+
+      {/* AI 列 */}
+      {showAiRow && (
+        <div className="flex flex-wrap items-center gap-2 border-t border-border/50 pt-2 text-xs">
+          {!ai.cached && (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => onGenerate(false)}
+              disabled={ai.generating || !plainText}
+              aria-label="生成 AI 語音"
+              title={`使用 ${settings.model} / ${settings.voice} 生成`}
+            >
+              {ai.generating ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <Sparkles />
+              )}
+              <span>{ai.generating ? generatingLabel : "生成 AI 語音"}</span>
+            </Button>
+          )}
+
+          {ai.cached && (
+            <>
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+                <Sparkles className="size-3" /> AI 語音
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => onGenerate(true)}
+                disabled={ai.generating}
+                aria-label="重新生成 AI 語音"
+                title="使用目前設定重新生成"
+              >
+                {ai.generating ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <RefreshCcw />
+                )}
+                <span>{ai.generating ? generatingLabel : "更新"}</span>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={onDownload}
+                aria-label="下載 AI 語音"
+                title="下載音檔"
+              >
+                <Download />
+                <span>下載</span>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={onRemove}
+                aria-label="刪除 AI 語音快取"
+                title="刪除這段 AI 語音快取"
+              >
+                <Trash2 />
+              </Button>
+            </>
+          )}
+
+          {ai.error && (
+            <span className="inline-flex items-center gap-1 text-destructive">
+              <AlertCircle className="size-3.5" /> {ai.error}
+            </span>
+          )}
+        </div>
+      )}
+
+      {hasTranscript && (
+        <TranscriptDialog
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+          text={transcript ?? ""}
+        />
       )}
     </div>
   )

@@ -6,18 +6,8 @@ import { SpeechPlayer } from "@/components/speech-player"
 import { ArticleMarkdown } from "@/components/article-markdown"
 import { KeywordSearchList } from "@/components/keyword-search-list"
 import { cn } from "@/lib/utils"
+import { formatDate } from "@/lib/format"
 import { loadNewsItem } from "@/lib/news"
-
-function formatDate(iso: string): string {
-  if (!iso) return ""
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return iso
-  return d.toLocaleDateString("zh-TW", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-}
 
 function NotFound() {
   return (
@@ -71,6 +61,7 @@ export function NewsDetail() {
         </div>
         <SpeechPlayer
           slug={`news-${item.slug}`}
+          title={item.title}
           content={item.content}
           transcript={item.transcript}
         />

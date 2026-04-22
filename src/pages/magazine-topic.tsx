@@ -6,18 +6,8 @@ import { Separator } from "@/components/ui/separator"
 import { ArticleMarkdown } from "@/components/article-markdown"
 import { SpeechPlayer } from "@/components/speech-player"
 import { cn } from "@/lib/utils"
+import { formatDate } from "@/lib/format"
 import { loadMagazineTopic } from "@/lib/magazine"
-
-function formatDate(iso: string): string {
-  if (!iso) return ""
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return iso
-  return d.toLocaleDateString("zh-TW", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-}
 
 function NotFound() {
   return (
@@ -84,6 +74,7 @@ export function MagazineTopicPage() {
         <div className="flex flex-col gap-4">
           <SpeechPlayer
             slug={`magazine-${topic.slug}-intro`}
+            title={`${topic.title}・序`}
             content={topic.intro}
             transcript={topic.introTranscript}
           />

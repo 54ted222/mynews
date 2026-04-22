@@ -8,18 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { formatDate } from "@/lib/format"
 import { loadMagazineTopics } from "@/lib/magazine"
-
-function formatDate(iso: string): string {
-  if (!iso) return ""
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return iso
-  return d.toLocaleDateString("zh-TW", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-}
 
 export function MagazineList() {
   const topics = use(loadMagazineTopics())

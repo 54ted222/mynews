@@ -11,19 +11,9 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { formatDate } from "@/lib/format"
 import { loadNewsMetaList } from "@/lib/news"
 import { loadMagazineTopics } from "@/lib/magazine"
-
-function formatDate(iso: string): string {
-  if (!iso) return ""
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return iso
-  return d.toLocaleDateString("zh-TW", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-}
 
 export function Home() {
   const latestNews = use(loadNewsMetaList()).slice(0, 3)
