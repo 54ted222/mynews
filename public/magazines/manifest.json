@@ -33,6 +33,23 @@
       "transcripts": []
     },
     {
+      "slug": "shipping-medium-large-projects-in-days-2026",
+      "articles": [
+        "01-how-many-days-is-realistic",
+        "02-spec-plan-mode-and-scope",
+        "03-tdd-hooks-review-ci",
+        "04-human-gates-and-release",
+        "_index"
+      ],
+      "transcripts": [
+        "01-how-many-days-is-realistic",
+        "02-spec-plan-mode-and-scope",
+        "03-tdd-hooks-review-ci",
+        "04-human-gates-and-release",
+        "_index"
+      ]
+    },
+    {
       "slug": "taiwan-saas-ideas-2026",
       "articles": [
         "01-opportunity",
