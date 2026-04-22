@@ -118,9 +118,11 @@ summary: 一句摘要（用於列表頁）
 
 內容產出相關的四個檔案集中在 `prompts/`，扮演不同角色、彼此串連：
 
-- **`prompts/TOPIC.md`**：主題池**資料檔**（不是腳本）。四層漏斗——
-  `interest`（讀者輪廓）、`suggested`（20 條快照）、`prepared`（10 條細化）、
-  `next`（1 條下期題目）。**直接跑會沒事發生；要透過 PREPARE/MAGAZINES 讀寫**
+- **`prompts/TOPIC.md`**：**資料檔**（不是腳本），同時放兩條產品線的
+  主題。雜誌漏斗四層（`interest` / `suggested` / `prepared` / `next`）
+  由 PREPARE / MAGAZINES 讀寫；`daily brief` 區塊（日報的角色、讀者、
+  四大主題、過濾、來源優先順序）由 ROUTINES 讀取。**直接跑會沒事發生；
+  透過對應腳本讀寫**
 - **`prompts/PREPARE.md`**：主題管線腳本。讀寫 `TOPIC.md`，由下往上補——
   下期不足就從 prepared 挑一個細化搬過來、prepared 不夠就從 suggested 補、
   suggested 不夠就依 interest + WebSearch 擴充。執行前有「主題池已滿就
@@ -131,9 +133,11 @@ summary: 一句摘要（用於列表頁）
   並行寫各篇、階段三派單一 subagent 補 GFM footnote + 語音逐字稿 sidecar。
   產出 `public/magazines/<topic-slug>/`
 - **`prompts/ROUTINES.md`**：每日報紙腳本（Claude Routines 自動跑一次）。
-  產出 `public/news/YYYY-MM-DD-daily-brief.md` 與對應 transcript。**日期
+  執行前 Read `TOPIC.md` 的 `daily brief` 區塊對齊主題與取材原則，本
+  檔只處理「怎麼產出符合站點規格的檔案」。產出
+  `public/news/YYYY-MM-DD-daily-brief.md` 與對應 transcript。**日期
   一定要實跑 `TZ=Asia/Taipei date +%Y-%m-%d` 取得**，不要從 context 推測
-  （曾發生沿用前一天日期導致整批 brief 被錯誤歸日）。與主題池無耦合
+  （曾發生沿用前一天日期導致整批 brief 被錯誤歸日）
 
 三支 `.md` 腳本通則：開寫前必 WebSearch / WebFetch、嚴禁憑記憶寫；時間
 敏感資訊標註截至日期；寫入前需符合「Markdown 動態載入」的 frontmatter

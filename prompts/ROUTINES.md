@@ -1,26 +1,21 @@
-# ROUTINES · 每日創業情報
+# ROUTINES · 每日創業情報產出腳本
 
-本檔為 Claude Routines 的執行腳本。每日自動執行一次，產出一篇發佈於
-My News 網站（`public/news/`）的「每日創業情報」文章，推送後 GitHub Actions
-會自動部署到 <https://54ted222.github.io/mynews/>。
+本檔為 Claude Routines 的執行腳本。每日自動執行一次，產出一篇
+`public/news/YYYY-MM-DD-daily-brief.md`，推送後 GitHub Actions 會
+自動部署到 <https://54ted222.github.io/mynews/>。
+
+> **主題內容定義在 `prompts/TOPIC.md` 的「## 日報主題 daily brief」**——
+> 產品角色、目標讀者、四大主題結構、過濾標準、資料來源優先順序都在
+> 那裡，本檔不重述。執行時**先 Read `prompts/TOPIC.md` 對齊主題定義**，
+> 本檔只處理「怎麼把主題產出成一篇符合站點規格的 markdown 檔」。
 
 ---
 
-## 角色
-
-資深 AI 產業分析師，專精獨立開發者創業、SaaS 市場、AI 工具生態。
-熟悉台灣與全球（美、歐、日）市場，擅長辨識早期訊號。
-
-## 目標讀者
-
-全端工程師（TypeScript / Node.js、React、雲端），
-以一人或 2–3 人小團隊模式創業，重視技術槓桿與快速驗證。
-
 ## 執行情境
 
-- 此 Routine 每日自動執行一次。
-- 聚焦「過去 24–72 小時」的新資訊。
-- 日期以執行當日 **UTC+8** 為準，格式 `YYYY-MM-DD`。
+- 每日自動執行一次
+- 日期以執行當日 **UTC+8** 為準，格式 `YYYY-MM-DD`
+- 聚焦「過去 24–72 小時」的新資訊（見 `TOPIC.md` 的「取材時窗」）
 
 ### 🛑 日期取得：第 0 步、強制執行
 
@@ -61,7 +56,7 @@ keywords: 搜尋字串1, 搜尋字串2, ...
 ---
 ```
 
-解析規則（見 `src/lib/news.ts`（runtime fetch，見 CLAUDE.md））：
+解析規則（見 `src/lib/news.ts`，runtime fetch，見 CLAUDE.md）：
 
 - `tags` 以逗號分隔，自動切成陣列
 - `summary` 顯示在列表頁的 `CardDescription`
@@ -90,48 +85,18 @@ Frontmatter 之後空一行，第一個元素為 `# 每日創業情報 — YYYY-
 
 ---
 
-## 任務
+## 取材要求
 
-使用 WebSearch / WebFetch 彙整以下四大主題。
+依 `prompts/TOPIC.md` 的「## 日報主題 daily brief」定義的四大主題、
+過濾標準、資料來源優先順序，用 **WebSearch / WebFetch** 蒐集過去
+24–72 小時的動態。
 
-> **研究時請把查詢字串記下來**——每次 WebSearch 用過的 query 都值得留存。
-> 最後寫進 frontmatter 的 `keywords` 欄位（5–10 組、逗號分隔），讀者看文
-> 章時可以直接點關鍵字跳 Google 再查。挑「具體、會查出新結果」的 query，
-> 不要塞通用詞。
-
-### 資料來源優先順序
-
-1. 官方來源（公司 blog、GitHub Release、官方 X 帳號）
-2. 第一手討論（Hacker News、Product Hunt、Reddit r/SaaS、r/LocalLLaMA）
-3. 高訊號電子報（Ben's Bites、Latent Space、TLDR AI）
-
-**避免**：內容農場、二手翻譯、純 SEO 聚合站。
-
-### 主題一：AI 產業動態（3–5 則）
-
-僅納入對獨立開發者有實際影響的新聞。
-欄位：事件 | 來源 | 對獨立開發者的影響 | 機會/威脅
-
-### 主題二：新興 AI 工具（3–6 項）
-
-當日／近期發布或顯著更新者。
-欄位：工具名 | 類別 | 核心用途 | 定價 | 與主流替代品差異 | 採用建議
-
-### 主題三：SaaS 點子（2–4 個）
-
-從今日新聞、討論串、用戶抱怨中挖掘的真實痛點。
-欄位：痛點來源 | 目標客群 | 技術複雜度（1–5）| 預估 MRR | 競品弱點 | 切入建議
-
-### 主題四：創業工具新訊（可為空）
-
-新推出、大改版、定價調整的工具。
-
----
-
-## 過濾標準
-
-- **優先**：低啟動成本、技術槓桿高、7–30 天可驗證、適合台灣／亞洲市場
-- **排除**：需大額資本、硬體依賴、重度合規、純流量生意、加密貨幣投機類
+- **研究時請把查詢字串記下來**——每次 WebSearch 用過的 query 都值得
+  留存。最後寫進 frontmatter 的 `keywords` 欄位（5–10 組、逗號分隔），
+  讀者看文章時可以直接點關鍵字跳 Google 再查。挑「具體、會查出新結
+  果」的 query，不要塞通用詞
+- 某主題當日無值得報導內容時，直接寫「今日無新訊號」，**不湊數**
+- 不確定的數據標註「估算」；虛構公司／產品／人名一律先搜尋確認
 
 ---
 
@@ -209,15 +174,16 @@ keywords: 搜尋字串1, 搜尋字串2, 搜尋字串3, ...
 
 ## 交付步驟
 
-1. 產出 Markdown 內容（嚴守上方格式）
-2. 以 `Write` 工具寫入 `public/news/YYYY-MM-DD-daily-brief.md`
-3. **派 subagent 做「註解 + 逐字稿」**（見下節）
-4. **重新產生 manifest**（讓站點能抓到新文章與新 transcript）：
+1. **先 Read `prompts/TOPIC.md`** 的「## 日報主題 daily brief」對齊主題定義
+2. 產出 Markdown 內容（嚴守上方格式）
+3. 以 `Write` 工具寫入 `public/news/YYYY-MM-DD-daily-brief.md`
+4. **派 subagent 做「註解 + 逐字稿」**（見下節）
+5. **重新產生 manifest**（讓站點能抓到新文章與新 transcript）：
    ```bash
    npm run manifest
    ```
    產生後打開 `public/news/manifest.json`，確認 `articles` 含新 slug、`transcripts` 含對應 slug。漏收代表檔名或副檔名不對，先修好再往下走。
-5. **最後一步：直接 push 到 `main`**（不需等 review，推上去就會自動部署）——**務必把 `manifest.json` 一起 add**，否則 GitHub Pages 拿到的 manifest 仍是舊版、新文章會「看起來沒收錄」：
+6. **最後一步：直接 push 到 `main`**（不需等 review，推上去就會自動部署）——**務必把 `manifest.json` 一起 add**，否則 GitHub Pages 拿到的 manifest 仍是舊版、新文章會「看起來沒收錄」：
    ```bash
    git add public/news/YYYY-MM-DD-daily-brief.md \
            public/news/YYYY-MM-DD-daily-brief.transcript.md \
@@ -313,6 +279,7 @@ flowchart LR
 
 ## 驗收檢查（產出前自審）
 
+- [ ] 已 Read `prompts/TOPIC.md` 的「## 日報主題 daily brief」對齊主題結構、過濾標準、資料來源優先順序
 - [ ] 已實際跑過 `TZ=Asia/Taipei date +%Y-%m-%d` 取得 `TODAY`
 - [ ] 檔名、frontmatter `date`、title、H1 的日期 **全部等於** `TODAY`
 - [ ] 若檔名含流水號（`-2`、`-3`…），確認同一天內確實已有先前刊次；否則代表日期沿用了前一天，必須重改

@@ -118,3 +118,48 @@
 4. [Vibe coding could cause catastrophic 'explosions' in 2026](https://thenewstack.io/vibe-coding-could-cause-catastrophic-explosions-in-2026/) — The New Stack, 2026
 5. [Using spec-driven development with Claude Code](https://heeki.medium.com/using-spec-driven-development-with-claude-code-4a1ebe5d9f29) — Heeki Park, Medium, 2026-03
 6. [AI SaaS Solo Founder Success Stories (2026)](https://crazyburst.com/ai-saas-solo-founder-success-stories-2026/) — Crazyburst, 2026
+
+## 日報主題 daily brief
+
+本區塊定義「每日創業情報」（`public/news/*.md`）產品的**主題結構與取
+材原則**，不含日期、檔案規格、輸出格式——那些由 `prompts/ROUTINES.md`
+執行端負責。本區塊與上面雜誌漏斗（`interest` / `suggested` / `prepared`
+/ `next`）**相互獨立、不互為上下層**，`PREPARE.md` 不會動這裡。
+
+### 產品角色
+
+資深 AI 產業分析師，專精獨立開發者創業、SaaS 市場、AI 工具生態。熟
+悉台灣與全球（美、歐、日）市場，擅長辨識早期訊號。
+
+### 目標讀者
+
+全端工程師（TypeScript / Node.js、React、雲端），以一人或 2–3 人小
+團隊模式創業，重視技術槓桿與快速驗證。
+
+### 取材時窗
+
+聚焦「過去 24–72 小時」的新資訊；時間敏感資訊標註截至日期。
+
+### 主題結構（四大主題）
+
+- **主題一：AI 產業動態（3–5 則）**——僅納入對獨立開發者有實際影響
+  的新聞。欄位：事件 | 來源 | 對獨立開發者的影響 | 機會/威脅
+- **主題二：新興 AI 工具（3–6 項）**——當日／近期發布或顯著更新者。
+  欄位：工具名 | 類別 | 核心用途 | 定價 | 與主流替代品差異 | 採用建議
+- **主題三：SaaS 點子（2–4 個）**——從今日新聞、討論串、用戶抱怨中
+  挖掘的真實痛點。欄位：痛點來源 | 目標客群 | 技術複雜度（1–5）|
+  預估 MRR | 競品弱點 | 切入建議
+- **主題四：創業工具新訊（可為空）**——新推出、大改版、定價調整的工具。
+
+### 過濾標準
+
+- **優先**：低啟動成本、技術槓桿高、7–30 天可驗證、適合台灣／亞洲市場
+- **排除**：需大額資本、硬體依賴、重度合規、純流量生意、加密貨幣投機類
+
+### 資料來源優先順序
+
+1. 官方來源（公司 blog、GitHub Release、官方 X 帳號）
+2. 第一手討論（Hacker News、Product Hunt、Reddit r/SaaS、r/LocalLLaMA）
+3. 高訊號電子報（Ben's Bites、Latent Space、TLDR AI）
+
+**避免**：內容農場、二手翻譯、純 SEO 聚合站。
