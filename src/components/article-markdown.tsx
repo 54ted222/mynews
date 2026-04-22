@@ -35,6 +35,39 @@ const components: Components = {
       </table>
     </div>
   ),
+  a: ({ href, children, ...rest }) => {
+    if (typeof href === "string" && href.startsWith("#")) {
+      const id = href.slice(1)
+      return (
+        <a
+          {...rest}
+          href={href}
+          onClick={(event) => {
+            event.preventDefault()
+            const target = id ? document.getElementById(id) : null
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+          }}
+        >
+          {children}
+        </a>
+      )
+    }
+    const isExternal = typeof href === "string" && /^https?:\/\//i.test(href)
+    return (
+      <a
+        {...rest}
+        href={href}
+        {...(isExternal && {
+          target: "_blank",
+          rel: "noopener noreferrer",
+        })}
+      >
+        {children}
+      </a>
+    )
+  },
 }
 
 const baseProse = cn(
