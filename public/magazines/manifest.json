@@ -11,6 +11,23 @@
       "transcripts": []
     },
     {
+      "slug": "ai-video-generation-workflow-tools-2026",
+      "articles": [
+        "01-workflow-design",
+        "02-models-and-tools",
+        "03-production-pipeline",
+        "04-budget-and-governance",
+        "_index"
+      ],
+      "transcripts": [
+        "01-workflow-design",
+        "02-models-and-tools",
+        "03-production-pipeline",
+        "04-budget-and-governance",
+        "_index"
+      ]
+    },
+    {
       "slug": "baas-supabase-2026",
       "articles": [
         "01-market-flywheel",
