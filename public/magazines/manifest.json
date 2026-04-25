@@ -39,6 +39,27 @@
       "transcripts": []
     },
     {
+      "slug": "cloudflare-indie-saas-stack-2026",
+      "articles": [
+        "01-why-cloudflare-default",
+        "02-compute-layers",
+        "03-storage-stack",
+        "04-ai-stack",
+        "05-cost-curve",
+        "06-blind-spots",
+        "_index"
+      ],
+      "transcripts": [
+        "01-why-cloudflare-default",
+        "02-compute-layers",
+        "03-storage-stack",
+        "04-ai-stack",
+        "05-cost-curve",
+        "06-blind-spots",
+        "_index"
+      ]
+    },
+    {
       "slug": "reliable-rag-system-2026",
       "articles": [
         "01-boundary-and-architecture",
