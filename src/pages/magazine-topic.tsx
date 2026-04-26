@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { ArticleMarkdown } from "@/components/article-markdown"
+import { MagazinePlayAll } from "@/components/magazine-play-all"
 import { SpeechPlayer } from "@/components/speech-player"
 import { cn } from "@/lib/utils"
 import { formatDate } from "@/lib/format"
@@ -69,6 +70,8 @@ export function MagazineTopicPage() {
           </div>
         )}
       </header>
+
+      <MagazinePlayAll topic={topic} />
 
       {topic.intro && (
         <div className="flex flex-col gap-4">
