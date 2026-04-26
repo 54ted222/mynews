@@ -1,6 +1,6 @@
 ---
 title: Vercel 服務全景：給個人 SaaS 創業者的拆裝指南
-issue: Vol.11
+issue: Vol.12
 date: 2026-04-26
 tags: Vercel, 個人 SaaS, indie hacker, 雲端基礎建設, 產品線
 summary: Vercel 從「部署 Next.js 的地方」變成八條產品線的 AI Cloud。對 indie 來說，問題不是「要不要用 Vercel」，而是「該用它的哪幾塊、什麼時候用、什麼時候逃」。本期六篇拆給你看。
