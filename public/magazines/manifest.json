@@ -153,6 +153,27 @@
       "transcripts": []
     },
     {
+      "slug": "vercel-services-for-indie-saas-2026",
+      "articles": [
+        "01-service-map",
+        "02-mvp-path",
+        "03-ai-stack",
+        "04-data-layer",
+        "05-background-jobs",
+        "06-cost-and-exit",
+        "_index"
+      ],
+      "transcripts": [
+        "01-service-map",
+        "02-mvp-path",
+        "03-ai-stack",
+        "04-data-layer",
+        "05-background-jobs",
+        "06-cost-and-exit",
+        "_index"
+      ]
+    },
+    {
       "slug": "vibe-coding-limits-2026",
       "articles": [
         "01-sweet-spot",
