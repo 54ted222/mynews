@@ -28,6 +28,23 @@
       ]
     },
     {
+      "slug": "aws-ecs-indie-saas-playbook-2026",
+      "articles": [
+        "01-service-map",
+        "02-mvp-delivery-and-deploy",
+        "03-operations-and-debug",
+        "04-cost-and-scale-curve",
+        "_index"
+      ],
+      "transcripts": [
+        "01-service-map",
+        "02-mvp-delivery-and-deploy",
+        "03-operations-and-debug",
+        "04-cost-and-scale-curve",
+        "_index"
+      ]
+    },
+    {
       "slug": "baas-supabase-2026",
       "articles": [
         "01-market-flywheel",
