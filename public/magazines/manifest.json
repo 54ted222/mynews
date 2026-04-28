@@ -77,6 +77,21 @@
       ]
     },
     {
+      "slug": "netlify-indie-saas-playbook-2026",
+      "articles": [
+        "01-shipping-speed",
+        "02-built-in-backend",
+        "03-cost-and-guardrails",
+        "_index"
+      ],
+      "transcripts": [
+        "01-shipping-speed",
+        "02-built-in-backend",
+        "03-cost-and-guardrails",
+        "_index"
+      ]
+    },
+    {
       "slug": "reliable-rag-system-2026",
       "articles": [
         "01-boundary-and-architecture",
