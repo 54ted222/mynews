@@ -1,0 +1,17 @@
+今天想聊 5 月 5 日這天的創業情報，主軸只有一條，就是 agent 經濟的協定層在這個禮拜被一次性鋪到位了。Cloudflare 跟 Stripe 把 provisioning 那塊打通、xAI 把 frontier 模型的價格殺到一個新底、Stripe 又同步推出兩條 agent 結帳協定，然後大廠 Anthropic、OpenAI 還在企業端各自開了合資。我會一條一條拆給你聽。
+
+先講最有 demo 渲染力的那條，就是 Cloudflare 跟 Stripe 在 4 月 30 號公開的 agent provisioning 協定。簡單說，以前你想跑一個新後端，要先有人類去申請 Cloudflare 帳號、刷卡買 domain、開 subscription、再 deploy 上去。現在這幾步，agent 可以自己跑完。它走 OAuth 三段式，先 discovery、再 authorization、最後 payment；買 domain 是直接接 Cloudflare Registrar，至成本價、沒有加價、預設開 WHOIS privacy。比較關鍵的是，Stripe 預設給每一家供應商一個月 100 美元的 spend cap，原始卡號永遠不會曝給 agent。意思是 agent 可以花錢，但不會帶著你的信用卡號到處跑。對 indie SaaS 來說，這是第一次認真面對「採購流程沒有人類在 loop 裡」這件事。
+
+第二條是 xAI 在同一天完成 Grok 4.3 的全量 rollout。價格我念給你聽：每一百萬 tokens 入 1.25 美元、出 2.5 美元，這是 200K context 之內的價；context window 拉到 1M，第一次原生支援影片輸入，同時還開了 Custom Voices 聲音複製套件，幾秒鐘樣本就能合成一個聲音。重點是，你拿同等規格的「1M context 加 reasoning」去比，Grok 4.3 大概是 GPT-5.5 的四分之一價、是 Claude Opus 4.7 的十二分之一價。這個價差大到，原本靠「Anthropic 跟 OpenAI 太貴所以我們便宜」當賣點的 wrapper SaaS，空間會被擠得很窄。對 indie 而言，比較實際的動作是抓 50 條既有 prompt，丟進去跑 Grok 4.3、Sonnet 4.6、DeepSeek V4 Pro 三組對比，看 pass rate 跟 latency 怎麼分布，再決定哪些任務切過去。
+
+第三條，也是我覺得最值得多聊一下的，是 Stripe 把 agent 結帳分成三層協定來打。最上層叫 Machine Payments Protocol，簡稱 MPP，是 Stripe 跟 Tempo 一起發的；它把 HTTP 402 那個「需要付款」的狀態碼寫成正式規格，agent 可以在單一 request 裡面 discover 價格、授權、付款、拿到一張帶簽章的 receipt。它還支援 session，意思是 agent 可以先 authorize 一筆預算，之後在這個預算裡面做串流的 micropayment。底下接 Stripe、Visa 的 shared payment token 走法幣，crypto 那邊接 Tempo mainnet 跟 Lightspark 的 Lightning。中間那層叫 Agentic Commerce Protocol，簡稱 ACP，是 OpenAI 跟 Stripe 共同維護的開放標準，4 月 17 號就把 cart、feed、orders、authentication、MCP 一次寫進規範。這條負責的是「在 ChatGPT 或 Codex 裡面叫 agent 幫我下單買東西」這件事的 surface。最底下還有 x402，這是 Coinbase 跟 Cloudflare 推動的鏈上 micropayment 協定，名字就是從 HTTP 402 來的，Google AP2 跟 Visa 也加入了。三條同時上、職責分離，意思是賣 API、賣資料、賣推論的 indie，下一版 roadmap 至少要把 MPP 的 hook 留好。
+
+第四條是大廠那邊。5 月 4 號，Anthropic 跟 OpenAI 各自宣布企業 AI 的合資。OpenAI 從 19 個另類資產管理人那邊募了 40 億美元，估值 100 億；說白了就是，他們投資組合裡那些公司會把 OpenAI 當預設供應商，這就是 preferred sales access，等於用資本把 distribution 直接買進來。Anthropic 同步啟動結構類似的合資，金額沒公開。對中型 SI 跟 agency 來說，這條是利空，因為原本你能爭的 enterprise pipeline 會被擠掉一塊；對 indie SaaS 來說，比較實際的動作是別把雞蛋全放在一家 vendor，多一個 router、多一個備援。
+
+最後一條快速帶過，就是 OpenAI 那場叫做「GPT-5.5 on 5/5」的邀請制活動，今晚在 SF，台灣時間是明天 5 月 6 號早上 8 點 55 分開始。Sam Altman 還公開在 X 上邀請 Elon Musk 來。社群目前的預期不是放新模型，比較可能是 Codex 或 Operator 那邊放更多 enterprise hook、或一支 GPT-5.5 mini 的 API。明天早上盯一下就好。
+
+幾個比較零碎但值得知道的東西。Vercel Sandbox 開了 custom tags 的 beta，每個 sandbox 最多 5 個 tag，你可以拿來分 staging 跟 production、分 customer、分 agent run、分 session；如果你在跑 agent farm，把 agent_id、task_id、env 三個 tag 接起來，billing dashboard 立刻能切。GitHub Copilot CLI 升到 v1.0.40，比較重要的修改是 MCP server 開始支援 OAuth 的 client_credentials grant，意思是企業 SSO 場景可以跑了，自己做 MCP server 的記得補上。Stripe Projects 這個月正式 GA，從 18 家 partner 擴到 32 家，跟 Cloudflare 那條 provisioning 協定接起來之後，「agent 自己跑 stack 設置」變成可以實機 demo 的場景。
+
+聊完事實，講三個點子。第一個是 per-agent 的 spend ledger 加上超額審批工作流。Stripe 預設那個 100 美元月上限只是底，企業實務需要分 agent、分 vendor、分 task 的細粒度，先做 Stripe-only 從 MPP webhook 拉資料，前 100 個團隊免費換 feedback，後面收每 agent 每月 25 美元。第二個是 ACP storefront for indie SaaS，把 Stripe-first 的 ACP server 包成 npm 一行裝，前 100 商家免費，第 101 家起按 GMV 抽 0.5 到 1%。第三個是 Grok 4.3 的長 context 切換 audit，固定價 1500 到 5000 美元，跑 50 條 golden set 三軸對比，做 30 家之後再轉 SaaS。
+
+重點是，這個禮拜不是任何一家單獨的產品發表，而是整個 agent 經濟的協定層被同步鋪到位：Cloudflare 那邊解掉了 provisioning、Stripe 那邊解掉了 commerce 跟 micropayment、xAI 那邊把成本拉低一個量級、Anthropic 跟 OpenAI 把 distribution 直接買進來。對 indie 來說，三件最值得今天就動的事是：一，跑一次 stripe project add cloudflare，把 agent 從建帳號到買 domain 的端到端時間錄下來；二，挑 50 條 prompt 對比 Grok 4.3 跟現有模型；三，在自家 SaaS roadmap 裡面把 MPP 跟 ACP 的 hook 留好。明天早上記得回來看 GPT-5.5 那場到底放了什麼。
