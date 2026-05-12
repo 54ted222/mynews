@@ -156,6 +156,25 @@
       ]
     },
     {
+      "slug": "taiwan-payment-trio-2026",
+      "articles": [
+        "01-landscape",
+        "02-fees",
+        "03-application",
+        "04-api",
+        "05-decision",
+        "_index"
+      ],
+      "transcripts": [
+        "01-landscape",
+        "02-fees",
+        "03-application",
+        "04-api",
+        "05-decision",
+        "_index"
+      ]
+    },
+    {
       "slug": "taiwan-saas-ideas-2026",
       "articles": [
         "01-opportunity",
