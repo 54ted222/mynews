@@ -14,9 +14,9 @@ keywords: ECPay API, NewebPay API, 紅陽 esafe, AllInOne SDK, CheckMacValue, AE
 
 如果只看官網價目表，台灣三家金流長得差不多——都做信用卡、ATM、超商代收，費率也都喊 2.x%。但**「開發要花多少時間」這條成本線，三家差距是用倍數在算的**：
 
-- **綠界 ECPay**：開發者文件完全公開、官方 GitHub 有 PHP / .NET / Python / Node.js / Java / Ruby SDK，2026 年甚至發了給 Claude Code、Cursor、VS Code 用的 **AI Skill toolkit**，串接時間最短。
+- **綠界 ECPay**：開發者文件完全公開、官方 GitHub 有 PHP / .NET / Python / Node.js / Java / Ruby **SDK[^sdk]**，2026 年甚至發了給 Claude Code、Cursor、VS Code 用的 **AI Skill toolkit[^aiskill]**，串接時間最短。
 - **藍新 NewebPay**：技術手冊要登入會員才能下載，官方沒有上架 GitHub SDK，整個生態靠 `ycs77/laravel-newebpay`、`depresto/newebpay-mpg-sdk` 這些社群套件撐起來。
-- **紅陽 esafe / Sunpay**：文件入口分散在 `doc.esafe.com.tw`、`www.sunpay.com.tw/developers/`，多數細節要透過業務窗口拿 PDF；GitHub 上幾乎只剩 `alChaCC/suntech_rails` 一個社群 repo，且只實作了 BuySafe 一個方法。
+- **紅陽 esafe[^esafe] / Sunpay**：文件入口分散在 `doc.esafe.com.tw`、`www.sunpay.com.tw/developers/`，多數細節要透過業務窗口拿 PDF；GitHub 上幾乎只剩 `alChaCC/suntech_rails` 一個社群 repo，且只實作了 BuySafe 一個方法。
 
 結論很白話：**文件越公開、社群越熱鬧，工程時數就越省。**
 
@@ -27,9 +27,9 @@ keywords: ECPay API, NewebPay API, 紅陽 esafe, AllInOne SDK, CheckMacValue, AE
 | 項目 | 綠界 ECPay | 藍新 NewebPay | 紅陽 esafe |
 | --- | --- | --- | --- |
 | 開發者中心 | [developers.ecpay.com.tw](https://developers.ecpay.com.tw/) 完全公開 | [API 下載頁](https://www.newebpay.com/website/Page/content/download_api) 需登入會員 | [doc.esafe.com.tw](https://doc.esafe.com.tw/) 公開但多為產品說明，深度規格需業務提供 |
-| Sandbox 後台 | [vendor-stage.ecpay.com.tw](https://vendor-stage.ecpay.com.tw/) 自助申請 | [ccore.newebpay.com](https://ccore.newebpay.com/) 自助申請 | [test.esafe.com.tw](https://test.esafe.com.tw/index/Login_Member.aspx) 需業務開通 |
+| Sandbox[^sandbox] 後台 | [vendor-stage.ecpay.com.tw](https://vendor-stage.ecpay.com.tw/) 自助申請 | [ccore.newebpay.com](https://ccore.newebpay.com/) 自助申請 | [test.esafe.com.tw](https://test.esafe.com.tw/index/Login_Member.aspx) 需業務開通 |
 | 範例完整度 | 各 API 都有可貼 Postman 的範例參數 | PDF 內含範例，但要拼湊版本 | BuySafe / 網址付 / Apple Pay 有教學頁，其餘需詢問 |
-| 信用卡測試流程 | 3D 簡訊固定 1234，文件直接告知；卡片有效月須晚於當月 | 測試站 `cwww.newebpay.com` 申請測試金鑰 | 需業務提供測試帳號與測試卡 |
+| 信用卡測試流程 | 3D[^3ds] 簡訊固定 1234，文件直接告知；卡片有效月須晚於當月 | 測試站 `cwww.newebpay.com` 申請測試金鑰 | 需業務提供測試帳號與測試卡 |
 
 差別最戲劇化的是「**新手能不能 1 小時內跑出第一筆假交易**」這件事：
 
@@ -68,13 +68,13 @@ GitHub 上搜 `suntech` 或 `esafe`，最常被引用的是 [`alChaCC/suntech_ra
 
 三家都用 HMAC / Hash 防止訊息被竄改，但細節讓開發體驗差很多。
 
-**綠界 CheckMacValue**（[官方說明](https://developers.ecpay.com.tw/?p=2902)）：
+**綠界 CheckMacValue[^checkmac]**（[官方說明](https://developers.ecpay.com.tw/?p=2902)）：
 1. 把參數依英文字母 A→Z 排序，以 `&` 串起來
 2. 前面加 `HashKey=...`、後面加 `&HashIV=...`
 3. 整串做 URL encode、轉小寫
 4. SHA256 雜湊、再轉大寫
 
-回呼用 form-encoded、特店需要回應字串 `1|OK` 表示已收到（沒回會被持續重送）。需要注意 PHP 的 `urlencode()` 與 .NET 預設行為不同，官方附了 URL Encode 轉換表。
+回呼（這種伺服器對伺服器的非同步通知，業界叫做 **Webhook[^webhook]**）用 form-encoded、特店需要回應字串 `1|OK` 表示已收到（沒回會被持續重送）。需要注意 PHP 的 `urlencode()` 與 .NET 預設行為不同，官方附了 URL Encode 轉換表。
 
 **藍新 TradeInfo / TradeSha**（[串接手冊](https://www.newebpay.com/website/Page/content/download_api) 與多份社群實作）：
 1. 把交易資料組成 query string
@@ -100,8 +100,8 @@ GitHub 上搜 `suntech` 或 `esafe`，最常被引用的是 [`alChaCC/suntech_ra
 ### 藍新
 
 - **信用卡定期定額**：[官方 PDF `NDNP-1.0.4`](https://www.newebpay.com/website/Page/download_file?name=%E4%BF%A1%E7%94%A8%E5%8D%A1%E5%AE%9A%E6%9C%9F%E5%AE%9A%E9%A1%8D%E4%B8%B2%E6%8E%A5%E6%8A%80%E8%A1%93%E6%89%8B%E5%86%8A_NDNP-1.0.4.pdf) 是主要文件。
-- 兩個獨家賣點：**卡號綁定** 與 **過期卡自動更新**（系統自動對接發卡行更新卡號），對 SaaS 訂閱續扣成功率非常有感。
-- **Security Token** 模組讓特店「不存卡號也能 fast checkout」。
+- 兩個獨家賣點：**卡號綁定** 與 **過期卡自動更新**（系統自動對接發卡行更新卡號，國際業界術語叫做 **Account Updater[^account-updater]**），對 SaaS 訂閱續扣成功率非常有感。
+- **Security Token[^card-token]** 模組讓特店「不存卡號也能 fast checkout」。
 - 開通方式可以後台自助或寫信給 cs@newebpay.com，審核大約兩個工作天。
 
 ### 紅陽
@@ -154,7 +154,7 @@ npx skills add paid-tw/skills --skill newebpay
 整理 Medium、iThelp、Casper Blog 等實測心得：
 
 - **綠界踩雷集中在 CheckMacValue**：[官方 FAQ「CheckMacValue Error 常見原因」](https://www.ecpay.com.tw/CascadeFAQ/CascadeFAQ_Qa?nID=1197) 是必讀。最常見的是 URL Encode 行為不一致（PHP 與 .NET 對 `~`、`*` 編碼差異）、參數中含空白沒處理、HashKey/HashIV 用到正式環境的去打測試。文件齊全到「踩雷的細節」官方都寫好了。
-- **藍新踩雷集中在加密順序**：iThelp 與 Casper 的串接記錄都提到，TradeInfo 的 AES 一定要先做才能算 TradeSha；Hash Key / Hash IV 一旦弄反測試也會過、上正式就炸。Y. L. Chou 的 [Medium 文章](https://yulinchou.medium.com/2023-%E4%BD%BF%E7%94%A8-php-sdk-%E6%90%AD%E9%85%8D-ngrok-%E4%B8%B2%E6%8E%A5%E8%97%8D%E6%98%9F%E9%87%91%E6%B5%81-api-62ab815f1240) 就示範了用 ngrok 在本機接 NotifyUrl 的標準作法。
+- **藍新踩雷集中在加密順序**：iThelp 與 Casper 的串接記錄都提到，TradeInfo 的 AES 一定要先做才能算 TradeSha；Hash Key / Hash IV 一旦弄反測試也會過、上正式就炸。Y. L. Chou 的 [Medium 文章](https://yulinchou.medium.com/2023-%E4%BD%BF%E7%94%A8-php-sdk-%E6%90%AD%E9%85%8D-ngrok-%E4%B8%B2%E6%8E%A5%E8%97%8D%E6%98%9F%E9%87%91%E6%B5%81-api-62ab815f1240) 就示範了用 **ngrok[^ngrok]** 在本機接 NotifyUrl 的標準作法。
 - **紅陽踩雷集中在「找不到人問」**：`suntech_rails` README 提到要手動關 CSRF token 才能接 callback、要在後台註冊不同 callback URL；其他語言開發者通常先把表單欄位 reverse 出來、再寫信給業務問 Q&A。
 
 ## 七、串接資訊流（綠界範例）
@@ -188,6 +188,17 @@ sequenceDiagram
 - **議價低費率、能接受走業務窗口**：紅陽。但要把「跟業務 ping 一次大約一個工作天」算進你的開發時程。
 
 文件公開度不是行銷文案，它直接決定你雇一個工程師花一天還是花一週把金流接上。**真實成本不在費率表，在 GitHub 的 README。**
+
+[^sdk]: SDK（Software Development Kit，軟體開發套件）指業者把 API 包成可直接 import 的程式庫，省去開發者自己處理底層 HTTP、簽章、序列化的工作。SDK 的語言涵蓋度與更新頻率是判斷一個平台「對開發者多認真」的硬指標。
+[^aiskill]: AI Skill toolkit 是 2025–2026 年才出現的新型開發者工具，把 API 文件、範例與錯誤排查整理成適合 Claude Code、Cursor、Copilot CLI 等 AI 助理讀取的知識包。開發者用自然語言描述需求，AI 就能生成符合該平台規範的程式碼。
+[^esafe]: esafe（紅陽 esafe 金流）是紅陽科技的線上金流品牌名，技術文件、測試環境、商家後台多數以 esafe 為網域與品牌名稱。SunPay 是 2024 年之後對外行銷的英文品牌，但工程師日常工作仍會大量遇到 esafe 這個字。
+[^sandbox]: Sandbox（沙箱、測試環境）指與正式環境隔離的模擬系統，讓開發者用假卡號、假交易練手不會真的扣到錢。每家金流的 sandbox 都有獨立的網址、商店代號與金鑰，正式上線前要切換。
+[^3ds]: 3DS（3-D Secure）是 Visa / Mastercard / JCB 推出的信用卡線上交易驗證機制，目前最常見的版本是 3DS 2.0。流程上會在授權前彈出簡訊 OTP 或 App 推播給持卡人確認，把交易詐欺責任從商家轉移回發卡銀行。
+[^checkmac]: CheckMacValue 是綠界 ECPay 自訂的訊息防竄改檢查碼，把參數依字母排序串接、加上 HashKey / HashIV、URL Encode、SHA256 雜湊後得出。每筆交易要算一次，欄位漏掉或順序錯了 API 會直接退件。
+[^webhook]: Webhook 指由伺服器主動 HTTP POST 通知另一個伺服器的非同步通信模式。金流的「ReturnURL」、「NotifyUrl」、「PeriodReturnURL」全是 webhook，由金流公司在交易結果出爐時打回你的後端。
+[^account-updater]: Account Updater（卡片自動更新服務）由 Visa / Mastercard 提供給特店，當持卡人換卡或卡片到期時，發卡行會把新卡號與效期推播給商家系統，避免訂閱續扣失敗。藍新對接這項服務在台灣較完整。
+[^card-token]: 卡號 Token（信用卡 Token）指用一組無意義字串取代真實卡號儲存在商家系統，扣款時用 token 向金流請求授權。商家不存卡號，能大幅減低 PCI-DSS 法遵壓力，也方便 SaaS 做訂閱續扣。
+[^ngrok]: ngrok 是開發者常用的內網穿透工具，把本機 localhost 的 HTTP 服務臨時暴露成公開網址，方便接收金流、Webhook、LINE Bot 等需要外部主動連入的測試請求，省去部署到正式環境才能測 callback 的麻煩。
 
 ---
 
