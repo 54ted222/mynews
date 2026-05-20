@@ -1,0 +1,23 @@
+今天想聊的，是過去四十八小時被低估的兩條結構性大事，以及它們交織出來、對 indie 開發者本週實際要做哪些動作。
+
+先講第一條主線，也是這週最讓人震撼的——Anthropic 在 5/18 公告，以三億美金以上的價格收購一家叫 Stainless 的開發者工具公司。Stainless 是 ex-Stripe 工程師 Alex Rattray 2022 年創辦的，做的事情很單純，就是把 OpenAPI 的 API 規格自動轉成 TypeScript、Python、Go、Java、Ruby、Kotlin 等等多語言的 SDK，外加 CLI、外加 MCP server。聽起來小，但他們的客戶名單很驚人——OpenAI、Google、Meta、Cloudflare、Runway 全在用。換句話說，過去這幾家對手廠商的官方 SDK，後台都跑同一家中介層。Anthropic 把它買下來，順手就把 hosted 服務停掉了，新註冊、新 project、新 SDK 都關，現有客戶保留已生成 SDK 的修改權，但不再 hosted，預期年底前 wind down 完成。
+
+所以這條訊號其實有兩層意義。第一層是直接打擊：OpenAI 跟 Google 從 5/18 開始，等於是自家公開 SDK 的中介工具被斷供，他們未來六到十二個月內，要嘛自架替代品、要嘛切到 Speakeasy、Fern、OpenAPI Generator 這些替代家。第二層更微妙——這是 frontier AI 廠商第一次直接把「dev infra 中介層」收進來當戰略護城河。簡單說，做「我幫你生成 X 給 Y AI 廠用」的 indie，要嚴肅評估自己未來十二個月被併購或邊緣化的可能性。
+
+然後就在這件事的隔天，5/19，第二顆炸彈掉下來——Andrej Karpathy 加入 Anthropic。Karpathy 大家應該都認識，他是 OpenAI 2015 年共同創辦人之一、之後去 Tesla 領 Full Self-Driving、2024 年離開 OpenAI 創辦 Eureka Labs 做 AI 教育，他在 YouTube 上做的 nanoGPT、micrograd、LLM from scratch 系列影響五年以上的獨立工程師學 LLM 的路徑。這次他加入 Anthropic，在 pre-training 負責人 Nick Joseph 麾下，帶一個新成立的 research team，主題就是 focused on using Claude to accelerate pre-training research，也就是用 Claude 加速 Claude 自己的預訓練。
+
+不過呢，這還不是這週 Anthropic 的全部動作。回過頭來看 Code w/ Claude London 5/19 跟 5/20 兩天場，Anthropic 順手又丟了 5 件 Managed Agents 出來。第一件叫 Dreaming，agent 跑完之後背景去 review 過去的 session、找 pattern、curate memory，讓 agent 真的在每次跑之間慢慢進步；第二件叫 Outcomes，會跑一個 evaluator model 對 agent 輸出依 rubric 打分、然後告訴它要改什麼；第三件叫 Multiagent Orchestration，lead agent 把工作 fan out 給 specialist subagent 並行跑；第四件叫 Claude Finance，更直接，給你十個金融行業 pre-built agent，從 earnings、portfolio、cap table、due diligence、deal memo，一路到 KYC、AML、合規通通有；第五件是 Add-ins，把 Claude 嵌進 Salesforce、Notion、Linear、Microsoft 365 這些介面裡直接跑。把這 5 件再加上 5/19 London Day 1 揭的 MCP Tunnels 跟 Self-hosted Sandboxes，等於 Anthropic 從 5/6 SF 場累積到 5/20 London 場，一口氣把「Managed Agents 七件套」完整 enterprise stack 都揭完了。
+
+同框還揭了 Developer Platform 三件研究 preview，這三件對 indie 影響非常直接。第一件叫 Advisor Strategy，主 model 旁邊掛一個 advisor model 給 second opinion；第二件，web search 跟 web fetch 內建到 Claude API；第三件，code execution 內建，可以直接在 API call 裡跑 Python 分析資料。重點是——這三件原本都是 indie 在 Claude wrapper SaaS 裡自己接的中介層：自架 SerpApi、Brave Search、Python sandbox、自寫 cascade router。現在 Anthropic 一個 endpoint 全包了，這意味著你家 wrapper SaaS 賣「我幫你做 web research」的差異化壓力本週起會明顯升高，得改賣「在 Claude 上補的 vertical workflows」這種上層東西。
+
+把 Stainless 收購、Karpathy 加入、Code w/ Claude London 5 件 Managed Agents，這三件事疊在同一週看，畫面就很清楚了。Anthropic 一週內完成：dev infra 中介層（Stainless）收進來、核心 pre-training 人才（Karpathy）收進來、Managed Agents 全鏈條補齊——從研究端、推論端、工具端、distribution 端、enterprise 端，全鏈條補滿。再對照背景，Anthropic 同時還在傳募三百億美金、九千億估值的新一輪，等於是把估值故事的每一塊拼圖同週疊上來給你看。對 indie 的影響很直接：中介層收窄了，差異化壓力升高了。
+
+接下來想聊第二條主線——Google 那邊。5/21 是 Google I/O 2026 進「on demand 階段」的日子，八十五場以上的 dev session、codelab、developer keynote 從今天起在 io.google/2026 全部開放。三個東西全 GA 了：Antigravity SDK preview，給 programmatic 控制加上自帶 infra hosting，可以跑在 Cloudflare Workers、Vercel、自架 K8s 上；Managed Agents in Gemini API，一個 API call 直接拿 fully provisioned agent 加 remote sandbox；然後 Gemini Enterprise Agent Platform，就是過去的 Vertex AI 改名，補上 session memory 跟 centralized governance。
+
+順著 Google 這條線往下講，多模型 router 那邊也有大事。OpenRouter 同台揭了 Gemini 3.5 Flash，定價是每百萬 token 輸入一塊半美金、輸出九塊美金，1M context、四倍速度，定位是 mid-tier 取代 Pro；而下面還有個 Gemini 3.1 Flash Lite Preview，定價是每百萬 token 輸入兩毛五、輸出一塊半——剛好是 3.5 Flash 的六分之一價，定位 cheap router。對跑 multi-LLM router 的 indie 來講，意思是 budget slot 從原本「Claude Haiku 4.5、GPT-5.5 Instant、Gemini 3 Flash」三家，本週起升級成「Haiku 4.5、GPT-5.5 Instant、Gemini 3.1 Flash Lite、Gemini 3.5 Flash mid」分層，加上 DeepSeek V4 Flash、Kimi K2.6、Qwen 3.6 Max，整體變成七到八家分 budget、mid、frontier 三層的局面。而且更關鍵的是，Gemini 3.1 Flash Lite 比 Claude Haiku 4.5 還便宜三到五倍，這是 cheap routing 5/21 起的新 baseline。本週就可以對自家 SaaS 跑「同 prompt 對比八家 router 月帳變動」，量化省幅。這就是這週對 indie 最具體、最可以量化的機會——一份「我家八家 router 月帳對比表」，就是接 SMB 客戶最好的 sales pitch、也是寫內容拉流量的好素材。
+
+把這兩條主線拉在一起看——Anthropic 把中介層收上來，Google 把 sandbox 跟 budget 路徑壓下來，indie 開發者夾在中間，本週要做的就是兩件事：往上做 vertical workflow 的差異化、往下做 router cost 量化。
+
+最後講一下實務行動，因為再不講可能就真的撞牆。明天，也就是 5/22，Supabase 的 OAuth token endpoint 會把回應從 HTTP 201 改成 HTTP 200。聽起來很小，但如果你自寫的 OAuth client 是 hardcode 解 201，就會壞掉。官方建議改成判 response.ok 的範圍。今天就把 staging 跑一輪 status code parse audit、把 hardcode 換掉。然後再往後算，5/30 是 Cloudflare K2.5 切 K2.6 的 alias、6/15 是 Anthropic Agent SDK Credit Pool 上線、6/18 是 Gemini CLI sunset 倒數二十八天、7/1 是 Postgres 14 自動升 17，每一格都要寫到月曆裡。再來，月底還有兩個 deadline——6/2 到 6/3 是 Microsoft Build 在 SF Fort Mason 開、預期會揭新的 Indie / Solo Tier Copilot 方案，5/31 則是 GH-600 Agentic AI Developer 認證 beta 八折的最後一天。
+
+重點是，這週看似新聞很多很雜，其實主線就一條——前端中介層在收窄、上層 vertical 差異化在打開、router 分層在重洗。Anthropic 在 Stainless 收購、Karpathy 加入、Code w/ Claude London 5 件 Managed Agents，這三件套疊起來那一刻，就是在告訴所有 indie：別再賣「我是 wrapper」這個故事了，去找客戶真正的 workflow 痛點，然後用更便宜的 budget slot 把成本壓下來。今天的功課是 audit 一遍自家工具堆疊，明天先把 Supabase 修好，月底把 Build 跟認證 deadline 收掉。這樣這週就沒白過。
