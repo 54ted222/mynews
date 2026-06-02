@@ -1,0 +1,19 @@
+今天想聊 6 月 3 號的每日創業情報，主線抓三件事：第一是 Microsoft 在 6 月 2 號 Build 大會上揭曉的 Project Solara，第二是 Anthropic 把 Glasswing 試點計畫一次擴張 4 倍到大約 200 個 partner，第三是 Microsoft 自家的 Polaris 編碼模型確定要跑在自家的 Maia 200 晶片上。這三件事疊在一起，對 1 到 10 人的 indie SaaS 來說，會打開一個非常具體的短期窗口，所以值得花 5 到 8 分鐘把脈絡講清楚。
+
+先講 Project Solara。這是 Microsoft 第一次以 hyperscaler 的身分，做出一個 OS 層級的「agent-first 裝置平台」，而且刻意不跑 Windows。底層是 MDEP，全名是 Microsoft Device Ecosystem Platform，本質上是一個 Microsoft 維護的企業版 Android fork，原本用在 Teams 的會議室硬體上。換句話說，它低功耗、為小裝置設計，但是同時保留了完整的 IT 管理層，像是 Microsoft Defender、Intune、Entra ID 登入這些都還在。Solara 配套發表了兩個 reference design，第一個叫 desk device，可以想像成 Amazon Echo Show 等級的桌面 ambient 顯示器，搭配 MediaTek 的 IoT SoC，會用臉部辨識解鎖，隨時待命提供 AI agent 入口；第二個叫 badge device，是可以穿戴的工作識別證，跑 Qualcomm 下一代 wearable 晶片，主打「on the go」的 agent。首波 pilot 客戶有五家，分別是 AccuWeather、Best Buy、CVS Health、Levi's 和 Target，全部都是零售或健康場域。簡單說，Microsoft 把第一個重押的垂直訂在「面向消費者的 IoT 裝置上跑 agent」這條線。
+
+對 indie 這代表什麼？第一，做零售或健康垂直 SaaS 的，本週就要評估自家是否要 ship 一個 MDEP build，因為 pilot 客戶的場景已經非常明確；第二，可以開一條 productized 服務，價位大概 1 到 3 千美金，幫客戶把現有 SaaS 接到 Solara 裝置上；第三，做隱私或離線垂直、像診所、事務所、製造業這類的，可以評估 WAR 加上 Solara desk device 的雙端組合，把「客戶看不見畫面、agent 在背景跑 JSON、XML、PDF」這條路徑做出來。值得注意的是，6 月 2 號當天的 brief 漏掉了 Solara 這件事，所以 6 月 3 號開始的 14 天會是搶時效的內容窗口。
+
+再來講 Anthropic 的 Glasswing。Glasswing 是 Anthropic 為 Mythos 這支內部資安 audit 產品做的私有 partner 試點。5 月 28 號公告時大約 50 個組織，6 月 2 號一口氣擴張 4 倍到大約 200 個 partner、跨 15 個以上的國家。新涵蓋的產業包括電網、自來水、醫療、電信、硬體製造，全部都是 critical infrastructure。FT 揭露的新 partner 名單包含 Okta、Samsung、ENISA 也就是歐盟資安局，還有 NATO 北約。累計找到的高危跟危急漏洞已經破 10K，比五月底的 6,202 又多了 4 千。為什麼這件事重要？因為 Anthropic 5 月 28 號公告 Mythos 公開倒數的時候用的字眼是「coming weeks」，現在已經過 6 天，估計剩下 8 到 25 天，落點在 6 月 11 號到 6 月 27 號之間。6 月 10 號跟 11 號的 Tokyo Code w/ Claude 大會就是最高機率的公開窗口。
+
+對 indie 的意思是，「critical infrastructure 已經 onboard 完了，下一輪就輪到 indie SaaS」這個敘事 6 月 3 號起最硬。如果你做面向消費者或 SMB 的 SaaS、暴露面又大，本週是最後熱期，可以上線一條「Mythos 公開前 7 天暴露面 audit」的 productized，價位 1.5K 到 5K。OSS 端可以丟一個 lead magnet，裡面附 Opus 4.8 加 Claude Security 加 Bumblebee 的掃描 SOP、自家暴露面試算表。對押 Claude 的客戶，這禮拜的 deck 裡面就要多加一頁「Glasswing 200 partners、10K 漏洞、critical infra 已上線」，當作背書。
+
+第三件事是 Polaris 確定跑在 Maia 200 上。Maia 200 是 Microsoft 自家的 AI 加速器，今年 1 月揭曉、上半年量產。規格是 TSMC 3 奈米、216GB 的 HBM3e、片上 SRAM 272MB、FP4 性能 10 petaFLOPS、FP8 是 5 petaFLOPS、TDP 750 瓦。FP4 性能大約是 Amazon 第三代 Trainium 的 3 倍、FP8 高於 Google 第七代 TPU。重點不是規格本身，而是 Microsoft 用自家 silicon 跑自家的 frontier 編碼模型 Polaris，等於完全避開 NVIDIA tax。對 indie 的意思是，8 月正式 swap 之後，GitHub Copilot 預設模型的單位 inference 成本預期會降下來，但是注意——prompt 行為的差異仍然是接下來 91 天的主要差異化窗口，因為 Polaris 用的是 MoE 架構、對 Rust 跟 Haskell 強，其他語言的 prompt drift 風險還未知。
+
+所以這禮拜跑 Copilot 的 indie 要做幾件事：第一，發一封客戶溝通信 v3，內容包含 Maia 200 的硬體底跟 Polaris 預期 cost 降的補丁；第二，準備一份「Maia 200 對 NVIDIA H200 或 B100、對 Google TPU、對 AMD MI350」的對比稿，當作 6/3 起 14 天的內容軸；第三，「Polaris pricing 預期對實際」這條 21 天的內容軸從 8 月正式 swap 前一路發到 swap 後。
+
+除了三條主線之外，還有幾件配套訊號值得一起看。6 月 1 號 GitHub Copilot 切到 token-based billing 之後，到了 Day 3 還在延燒，Pro+ 月費 39 美金的用戶有人 2 小時就燒掉 8% 的額度，估算 25 小時就能跑完整月配額。社群切平台的名單已經穩定在 OpenAI Codex、Claude 月費 20、DeepSeek V4 Pro 跟 local OSS 四個。同一週還有 6 月 3 號 Cursor Teams 改 two-tier，Standard 年訂 32 美金月訂 40 美金，Premium 5 倍用量年訂 96 美金月訂 120 美金；6 月 8 號 Cursor Bugbot 切 usage-based、原本每席 40 美金改成每個 PR 1 到 1.5 美金。我把這四件事合起來叫「seat 轉 squeeze 四槍」，一個禮拜內所有 per-seat 訂閱的 dev tool 都被客戶質問同一件事——「你家會不會也像 Copilot 突然漲」。所以做 dev tool 中介或 PR 自動化 SaaS 的，本週就要把「seat 轉 hybrid 轉 outcome」的決策樹跟客戶溝通模板做出來。
+
+還有一條長線是 8 月 2 號的 EU AI Act GPAI enforcement 倒數 60 天。Article 25 把 deployer 變 provider 的三個觸發點是：有規模的 fine-tuning、改變 intended purpose、用自家品牌 rebranding。所以做 EU 客戶 vertical SaaS、或者跑 LoRA、SFT 自家模型對外賣的，本週就要做一輪 audit。
+
+重點是：6 月 2 號這一天，Microsoft 在裝置端開了 Solara、Anthropic 在資安端把 Glasswing 擴了 4 倍、Polaris 確定跑自家 silicon——三個方向一次擴張。對 indie 來說，這禮拜要做的事很具體：retail 跟 health 垂直的，列「Solara MDEP agent 對接」productized；押 Claude 的，把「Mythos 公開倒數 8 到 25 天暴露面 audit」上線；跑 Copilot 的，發客戶溝通信 v3；做 dev tool 的，把「seat 轉 squeeze 四槍 14 天總結」內容軸推出去。6 月 10 號的 Tokyo Code w/ Claude 是接下來最重要的觀察錨點，Mythos 公開最有可能就在那天揭曉。
