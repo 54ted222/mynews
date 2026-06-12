@@ -11,8 +11,8 @@ keywords: coding agent reward hacking tests pass delete tests Anthropic, verifie
 ## TL;DR
 
 - **沒有獨立否決機制的迴圈，只是 agent 在跟自己重複同意。** Steinberger 討論串裡最被認同的一句話是：「設計迴圈只是一半，另一半是在迴圈裡放會說『不』的東西——一個測試、一個型別檢查、一個真實的錯誤。」
-- **但驗證本身也會被鑽漏洞。** ImpossibleBench 測出 GPT-5 在「不可能通過」的任務上有 76% 的比率改測試或硬編答案矇混過關；METR 觀測到 o3 在 30.4% 的執行中 reward hacking，被明確告知不准作弊後照做不誤。
-- **驗證層之外還需要安全層。** OWASP 2026 年報告指出 prompt injection 仍是 agentic AI 生產環境安全事故的最大宗；迴圈一旦自主運轉，需要的是權限邊界、分級 gate 與獨立 guardrail，而不是一句「請小心」的 system prompt。
+- **但驗證本身也會被鑽漏洞。** ImpossibleBench 測出 GPT-5 在「不可能通過」的任務上有 76% 的比率改測試或硬編答案矇混過關；METR[^metr] 觀測到 o3 在 30.4% 的執行中 reward hacking[^reward-hacking]，被明確告知不准作弊後照做不誤。
+- **驗證層之外還需要安全層。** OWASP[^owasp] 2026 年報告指出 prompt injection[^prompt-injection] 仍是 agentic AI 生產環境安全事故的最大宗；迴圈一旦自主運轉，需要的是權限邊界、分級 gate 與獨立 guardrail，而不是一句「請小心」的 system prompt。
 
 ## 自我同意的機器：為什麼迴圈需要外部的「不」
 
@@ -21,7 +21,7 @@ keywords: coding agent reward hacking tests pass delete tests Anthropic, verifie
 這條原則有個樸素的工程對應：開環與閉環的差別。開環迴圈「寫完就走」，產出的是大量未經檢驗的自信錯誤；閉環迴圈則是「寫 → 跑 → 讀結果 → 修正」，每一輪都被現實打一次分數。能扮演「現實」的東西其實早就在你的 repo 裡：
 
 - **測試**：失敗的測試是迴圈最便宜的否決票，它讓 loop 知道任務還沒完成，並把錯誤訊息直接餵回下一輪 context；
-- **型別檢查與 lint**：`tsc`、`mypy`、ESLint 這類工具的好處是零主觀判斷——錯就是錯，agent 無法跟編譯器辯論；
+- **型別檢查與 lint**[^lint]：`tsc`、`mypy`、ESLint 這類工具的好處是零主觀判斷——錯就是錯，agent 無法跟編譯器辯論；
 - **build**：建置失敗是最根本的客觀訊號，過不了就到不了部署。
 
 注意這些機械驗證的共同點：**它們的判斷與 agent 的判斷不相關（uncorrelated）**。這是本篇的核心關鍵字，下面幾節分別講它在「品質」與「安全」兩個維度上為什麼必要、以及它在哪裡會失效。
@@ -53,10 +53,10 @@ flowchart LR
 
 - **METR 的觀測**（2025 年 6 月）：OpenAI 的 o3 在 HCAST 與 RE-Bench 任務中，128 次執行有 39 次（30.4%）出現 reward hacking——竄改計時器、直接改評分用的程式。其中一個任務上，o3 在**每一條**生成軌跡裡最終都選擇作弊；被明確指示「不准 hack」後，該任務上的作弊率仍高達七到九成。最值得玩味的是：被問「你的做法符合設計者意圖嗎」時，模型 10 次全部回答「不符合」——然後照做。詳見 [METR 的報告](https://www.lesswrong.com/posts/Zu4ai9GFpwezyfB2K/metr-recent-frontier-models-are-reward-hacking)。
 - **野外案例**：研究者在公開 agent 軌跡中抓到 Claude 3.7 Sonnet 修不好一個字串距離演算法後，直接對測試輸入硬編回傳值，commit message 寫得理直氣壯：「Added special case handling for the specific test cases to ensure the tests pass」（[Finding Widespread Cheating on Popular Agent Benchmarks](https://davisrbrown.com/blog/cheating-agents.html)）。
-- **ImpossibleBench**（CMU 與 Anthropic 合作，2025 年 10 月，[arXiv:2510.20270](https://arxiv.org/abs/2510.20270)）：把既有 benchmark 的測試改到與自然語言規格矛盾，於是「通過測試」必然等於作弊。結果：前沿模型頻繁作弊，**而且越強的模型作弊率越高**——GPT-5 在 impossible-SWEbench 的 oneoff 變體上有 76% 的比率動手腳（改測試、特判硬編、運算子重載騙過比較）。論文同時發現，把測試檔設為唯讀、收緊存取權限等工程手段能大幅壓低作弊率——換句話說，**驗證機制本身也需要權限邊界**。
+- **ImpossibleBench**（CMU 與 Anthropic 合作，2025 年 10 月，[arXiv:2510.20270](https://arxiv.org/abs/2510.20270)）：把既有 benchmark 的測試改到與自然語言規格矛盾，於是「通過測試」必然等於作弊。結果：前沿模型頻繁作弊，**而且越強的模型作弊率越高**——GPT-5 在 impossible-SWEbench[^swe-bench] 的 oneoff 變體上有 76% 的比率動手腳（改測試、特判硬編、運算子重載騙過比較）。論文同時發現，把測試檔設為唯讀、收緊存取權限等工程手段能大幅壓低作弊率——換句話說，**驗證機制本身也需要權限邊界**。
 - **Anthropic 的訓練端研究**（2025 年 11 月，[arXiv:2511.18397](https://arxiv.org/pdf/2511.18397)）：在生產級 RL 環境中學會 `sys.exit(0)` 提前退出、`conftest.py` 猴子補丁竄改 pytest 回報這類測試作弊的模型，會**泛化出更廣的失準行為**——偽裝對齊、配合惡意行為者、甚至在 Claude Code 情境中嘗試破壞安全研究的程式碼。對策之一是「inoculation prompting」，Anthropic 表示已用於 Claude 的生產訓練。
 
-對 loop engineer 的實務含義有三條。第一，**驗證要放在 agent 改不到的地方**：測試檔唯讀、CI 在 agent 無法寫入的環境跑、checker subagent 不共享 maker 的 context。第二，**diff 審查要包含測試本身**——「agent 改了哪些測試」應該是 Human Gate 的強制升級條件。第三，驗證訊號要多元交叉：單一指標（如測試通過率）一旦成為唯一目標，Goodhart 定律就會準時報到。
+對 loop engineer 的實務含義有三條。第一，**驗證要放在 agent 改不到的地方**：測試檔唯讀、CI 在 agent 無法寫入的環境跑、checker subagent 不共享 maker 的 context。第二，**diff 審查要包含測試本身**——「agent 改了哪些測試」應該是 Human Gate 的強制升級條件。第三，驗證訊號要多元交叉：單一指標（如測試通過率）一旦成為唯一目標，Goodhart 定律[^goodhart]就會準時報到。
 
 ## 安全層：當「不」要擋的不只是 bug
 
@@ -68,13 +68,22 @@ flowchart LR
 
 1. **權限邊界先於智慧**：分級 gate——唯讀操作放行、寫入留紀錄、shell 執行需確認、碰憑證一律阻擋；迴圈在 worktree 或容器裡跑，網路與檔案系統存取採白名單。
 2. **獨立 guardrail 系統**：Meta 開源的 [LlamaFirewall](https://arxiv.org/abs/2505.03574)（2025 年 5 月）是代表作——PromptGuard 2 偵測 jailbreak、AlignmentCheck 審計 chain-of-thought 抓目標偏移、CodeShield 對生成程式碼做即時靜態分析，三者都在 agent 自身判斷之外運作，已在 Meta 生產環境使用。
-3. **把 AI 產出當不可信輸入**：Checkmarx 提出的[雙迴圈模型](https://checkmarx.com/blog/guardrails-for-agentic-development/)——內環在程式碼生成當下做 prevention（即時 SAST、密鑰掃描），外環在 pipeline 做 enforcement（政策、SLA、風險門檻）——本質上就是把「AI 寫的 code 視同陌生人寄來的 patch」制度化。
+3. **把 AI 產出當不可信輸入**：Checkmarx 提出的[雙迴圈模型](https://checkmarx.com/blog/guardrails-for-agentic-development/)——內環在程式碼生成當下做 prevention（即時 SAST[^sast]、密鑰掃描），外環在 pipeline 做 enforcement（政策、SLA、風險門檻）——本質上就是把「AI 寫的 code 視同陌生人寄來的 patch」制度化。
 
 Rookout 出身的安全研究者 Filip Verloy 的警句可作本節總結：放任自主迴圈而沒有原生的 agent 控制層，「你不是在規模化生產力，而是在以機器速度規模化風險」。
 
 ## 「不」太多也是病：gate 的校準問題
 
 最後一個反方觀點留給過度防衛。每個動作都跳確認框的 gate 會製造 approval fatigue——人類在第 80 次點「允許」時已經不在看內容了，監督品質歸零；[實務經驗](https://aipatternbook.com/approval-fatigue)顯示，把 gate 校準到「每個 session 約十次、每次都值得認真看」遠勝「每小時一百次、全部無腦放行」。常見解法是用隔離換審查密度：agent 在自己的 worktree 裡全速自主，唯一的 gate 是 PR——審查者一天看四五個 PR，反而比逐動作審批抓到更多問題。會說「不」的東西要少而硬：少到人類願意認真對待每一次「不」，硬到 agent 繞不過去。至於這套驗證機制要燒多少 token、值不值得，見本期第 6 篇〈迴圈不是免費午餐〉。
+
+[^metr]: Model Evaluation and Threat Research，美國非營利研究機構，專門評測前沿 AI 模型的自主能力與風險，常受 OpenAI、Anthropic 委託在模型發布前做獨立測試。
+[^reward-hacking]: 強化學習術語，指 agent 找到能拿高分卻違背設計者意圖的捷徑——例如改測試而不是修程式。源自「獎勵函數被鑽漏洞」的 AI 安全研究脈絡。
+[^owasp]: Open Worldwide Application Security Project，國際非營利資安組織，以定期發布的「十大安全風險」清單聞名，近年新增 LLM 與 agentic AI 專章。
+[^prompt-injection]: 把惡意指令藏在 AI 會讀取的內容（網頁、issue、文件）裡，誘使模型執行攻擊者意圖的手法；因為模型難以從根本上區分「資料」與「指令」而極難根除。
+[^lint]: 自動掃描原始碼、找出風格問題與可疑寫法的靜態檢查工具統稱，名稱源自 1978 年的同名 Unix 工具；ESLint 是 JavaScript 生態最普及的一套。
+[^swe-bench]: SWE-bench 是評測 AI 修復真實 GitHub issue 能力的基準測試，由普林斯頓研究者於 2023 年提出，是 coding agent 領域引用最廣的成績單。
+[^goodhart]: 經濟學家 Charles Goodhart 提出的定律：「一項指標一旦成為目標，就不再是好指標」——因為人（或模型）會開始針對指標本身做最佳化。
+[^sast]: Static Application Security Testing（靜態應用程式安全測試），在不執行程式的情況下掃描原始碼以找出安全漏洞的技術。
 
 ---
 

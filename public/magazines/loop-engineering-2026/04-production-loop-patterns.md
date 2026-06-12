@@ -10,7 +10,7 @@ keywords: PR babysitter agent loop pattern Claude Code production, CI sweeper au
 
 ## TL;DR
 
-- 截至 2026 年 6 月，社群（以 cobusgreyling/loop-engineering repo 的整理最完整）已沉澱出七種可直接套用的迴圈模式；它們在觸發頻率（5 分鐘到 1 天）與 token 成本（單次 no-op 約 3k 到單次修復約 250k tokens）上差距達兩個數量級。
+- 截至 2026 年 6 月，社群（以 cobusgreyling/loop-engineering repo 的整理最完整）已沉澱出七種可直接套用的迴圈模式；它們在觸發頻率（5 分鐘到 1 天）與 token 成本（單次 no-op[^no-op] 約 3k 到單次修復約 250k tokens）上差距達兩個數量級。
 - 高頻高耗的 PR Babysitter 與 CI Sweeper 回報最直接，但 CI Sweeper 在 15 分鐘節奏下若沒有「CI 是綠的就立刻退出」的早退邏輯，日燒可破 500 萬 tokens——這兩種模式只適合 PR 流量大、CI 穩定的團隊。
 - 選型鐵律：從低成本、report-only（L1）的 Daily Triage 或 Issue Triage 起步，跑 1–2 週確認訊號品質後再升級到會動手改 code 的 L2 模式；不要從 CI Sweeper 開始。
 
@@ -34,20 +34,20 @@ keywords: PR babysitter agent loop pattern Claude Code production, CI sweeper au
 
 這兩種是回報感最強、也最容易燒錢的模式，值得單獨算帳。
 
-**PR Babysitter** 的單次成本結構（loop-engineering repo 的估計）：no-op 約 3k tokens、完整 triage 約 80k、含驗證的修復嘗試約 250k；以 10 分鐘節奏跑，建議日上限 2M tokens。它的成立前提是「大多數輪次是 no-op」——watchlist 空了就秒退。實戰面，Jökull Sólberg 公開的 `/babysit-pr` Claude Code skill（約 170 行 markdown）是目前最常被引用的案例：平行輪詢 CI 與 Greptile review、把所有 feedback 分流成 Fix / Dismiss / Escalate 三類、修完 push、循環到 PR 乾淨為止，從 push 到 merge-ready 約 10 分鐘 wall-clock，其中大半是在等 CI。關鍵設計是 triage 那一步：agent 對每條 review 意見做判斷而不是照單全修，因為 review 工具的誤報率不低。
+**PR Babysitter** 的單次成本結構（loop-engineering repo 的估計）：no-op 約 3k tokens、完整 triage 約 80k、含驗證的修復嘗試約 250k；以 10 分鐘節奏跑，建議日上限 2M tokens。它的成立前提是「大多數輪次是 no-op」——watchlist 空了就秒退。實戰面，Jökull Sólberg 公開的 `/babysit-pr` Claude Code skill（約 170 行 markdown）是目前最常被引用的案例：平行輪詢 CI 與 Greptile[^greptile] review、把所有 feedback 分流成 Fix / Dismiss / Escalate 三類、修完 push、循環到 PR 乾淨為止，從 push 到 merge-ready 約 10 分鐘 wall-clock，其中大半是在等 CI。關鍵設計是 triage 那一步：agent 對每條 review 意見做判斷而不是照單全修，因為 review 工具的誤報率不低。
 
-**CI Sweeper** 更貴：綠燈 no-op 約 5k、triage 約 50k、完整修復嘗試約 200k tokens；15 分鐘節奏下若缺早退邏輯，日燒可超過 5M tokens。它的典型風險是「fix-the-symptom loop」——把 CI 弄綠了但沒修到根因，所以該模式強制要求獨立 verifier 把關（原理見本期第 3 篇〈迴圈裡要有會說「不」的東西〉），且同一failure 修 3 次失敗、或要動到超過 5 個檔案 / 核心系統時必須升級給人類。**flaky 測試多的 codebase 不要跑這個模式**：迴圈會把 token 燒在追逐幽靈上。
+**CI Sweeper** 更貴：綠燈 no-op 約 5k、triage 約 50k、完整修復嘗試約 200k tokens；15 分鐘節奏下若缺早退邏輯，日燒可超過 5M tokens。它的典型風險是「fix-the-symptom loop」——把 CI 弄綠了但沒修到根因，所以該模式強制要求獨立 verifier 把關（原理見本期第 3 篇〈迴圈裡要有會說「不」的東西〉），且同一failure 修 3 次失敗、或要動到超過 5 個檔案 / 核心系統時必須升級給人類。**flaky 測試[^flaky-test]多的 codebase 不要跑這個模式**：迴圈會把 token 燒在追逐幽靈上。
 
-但這類「掃失敗、派工修」的思路在基礎設施到位時上限很高。Brian Douglas 2026 年 3 月的實測：用名為 Sweeper 的工具把 842 個 ESLint 錯誤（橫跨 99 個檔案）按檔案分組、生成 prompt、fan out 給 5 個平行 Claude Code sub-agent，三輪共 54 分鐘、100% 修復率，最終 PR 改了 110 個檔案。他的結論不是「prompt 寫得好」，而是排程、分組、記錄每輪策略與 token 成本的 infrastructure 才是能力上限。
+但這類「掃失敗、派工修」的思路在基礎設施到位時上限很高。Brian Douglas 2026 年 3 月的實測：用名為 Sweeper 的工具把 842 個 ESLint[^eslint] 錯誤（橫跨 99 個檔案）按檔案分組、生成 prompt、fan out 給 5 個平行 Claude Code sub-agent，三輪共 54 分鐘、100% 修復率，最終 PR 改了 110 個檔案。他的結論不是「prompt 寫得好」，而是排程、分組、記錄每輪策略與 token 成本的 infrastructure 才是能力上限。
 
 ## 低成本起手式：四種被低估的便宜模式
 
 相對於雙雄，四種低成本模式的共同點是**讀多寫少**，輸出是報告、草稿或標籤，不是 code change，所以單次成本低、出錯代價也低。
 
 - **Daily Triage**：每天早上掃 CI、issues、commits、聊天室，產出一份排好優先序的 `STATE.md`。no-op 約 5k tokens，標準掃描約 50k，建議日上限 100k。它是 repo 明文推薦的入門模式：report-only 跑 1–2 週、人類確認訊號可信之後，才考慮加上小型修復能力。
-- **Issue Triage**：實戰案例最多的一型。Alex Yan 用約 500 行 TypeScript 寫成 GitHub Action：新 issue 進來→LLM 分類上標籤→兩段式重複偵測（先用 GitHub 原生搜尋找候選、LLM 只判斷 shortlist）→草擬回覆。兩段式設計就是典型的成本控制：便宜的關鍵字搜尋先收斂，貴的 LLM 只看決賽圈。Metabase 的 Repro-Bot 則展示了另一個取捨——他們**刻意不讓它全自動跑**，人類先審 issue 再觸發 agent 重現 bug，理由是防 prompt injection。
+- **Issue Triage**：實戰案例最多的一型。Alex Yan 用約 500 行 TypeScript 寫成 GitHub Action：新 issue 進來→LLM 分類上標籤→兩段式重複偵測（先用 GitHub 原生搜尋找候選、LLM 只判斷 shortlist）→草擬回覆。兩段式設計就是典型的成本控制：便宜的關鍵字搜尋先收斂，貴的 LLM 只看決賽圈。Metabase[^metabase] 的 Repro-Bot 則展示了另一個取捨——他們**刻意不讓它全自動跑**，人類先審 issue 再觸發 agent 重現 bug，理由是防 prompt injection[^prompt-injection]。
 - **Changelog Drafter / Post-Merge Cleanup**：前者在 tag 或每日節奏上把 merge 紀錄整理成 release notes 草稿（傳統工具如 release-drafter 早就證明這個需求存在，LLM 版只是把模板換成理解 diff）；後者在離峰時段掃 merge 後殘留的暫時性 log 與 unused import。兩者都便宜到幾乎沒有「不跑」的理由——前提是你的團隊真的有這兩個痛點。
-- **Dependency Sweeper** 介於中間：比 Renovate 多的是讀 changelog 與 migration 文件再改 code 的能力（2025 年的學術實作精確率約 71.4%），但起手務必鎖 patch-only，minor / major 升級的爆炸半徑不是 L2 該碰的。
+- **Dependency Sweeper** 介於中間：比 Renovate[^renovate] 多的是讀 changelog 與 migration 文件再改 code 的能力（2025 年的學術實作精確率約 71.4%），但起手務必鎖 patch-only，minor / major 升級的爆炸半徑不是 L2 該碰的。
 
 ## 選型指南：什麼時候值得跑、什麼時候別跑
 
@@ -61,6 +61,13 @@ keywords: PR babysitter agent loop pattern Claude Code production, CI sweeper au
 最後一個反方提醒：這七種模式沒有一種能拯救「事件密度低 + CI 不穩定」的專案。flaky 測試會讓 CI Sweeper 空轉燒錢，低流量會讓高頻模式的固定成本攤不掉——這種時候正確答案是先修 CI、或乾脆不跑迴圈。具體成本論戰與 comprehension debt 的討論，見本期第 6 篇〈迴圈不是免費午餐〉。
 
 [^註]: 表中 token 成本估計均出自 loop-engineering repo 各 pattern 文件，截至 2026-06-12；實際成本依 codebase 規模與 context 設計浮動。
+[^no-op]: no operation 的縮寫，程式術語中指「不做任何實質動作」的執行；此處指 agent 醒來檢查後發現無事可做、直接退出的那一輪。
+[^greptile]: 提供 AI 程式碼審查的新創服務，能讀懂整個 codebase 的脈絡後對 PR 自動留下 review 意見，常與 CI 並列為 PR 的自動把關工具。
+[^flaky-test]: 指程式碼未變動卻時而通過、時而失敗的不穩定測試，成因多為時序、並行或外部依賴問題，是 CI 訊號可信度的頭號殺手。
+[^eslint]: JavaScript / TypeScript 生態最普及的 lint（靜態檢查）工具，依可設定的規則集掃描原始碼、標記風格與潛在錯誤，多數規則可自動修復。
+[^metabase]: 開源商業智慧（BI）工具公司，產品讓非工程師也能查詢資料庫、製作儀表板；其工程團隊常公開分享開發流程實驗。
+[^prompt-injection]: 把惡意指令藏在 AI 會讀取的內容（網頁、issue、文件）裡，誘使模型執行攻擊者意圖的手法；因為模型難以從根本上區分「資料」與「指令」而極難根除。
+[^renovate]: 自動化依賴更新工具，偵測專案所用套件的新版本並自動開 PR；GitHub 官方的 Dependabot 屬同類服務。兩者都只開 PR，不處理升級後的程式碼相容問題。
 
 ---
 
