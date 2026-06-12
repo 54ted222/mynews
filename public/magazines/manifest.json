@@ -77,6 +77,27 @@
       ]
     },
     {
+      "slug": "loop-engineering-2026",
+      "articles": [
+        "01-from-prompts-to-loops",
+        "02-anatomy-of-a-loop",
+        "03-verification-and-guardrails",
+        "04-production-loop-patterns",
+        "05-build-your-first-loop",
+        "06-costs-and-comprehension-debt",
+        "_index"
+      ],
+      "transcripts": [
+        "01-from-prompts-to-loops",
+        "02-anatomy-of-a-loop",
+        "03-verification-and-guardrails",
+        "04-production-loop-patterns",
+        "05-build-your-first-loop",
+        "06-costs-and-comprehension-debt",
+        "_index"
+      ]
+    },
+    {
       "slug": "netlify-indie-saas-playbook-2026",
       "articles": [
         "01-shipping-speed",
