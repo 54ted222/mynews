@@ -1,0 +1,15 @@
+今天想聊的是 2026 年 6 月 20 號這一天，AI 創業圈最該抓的一條主線——從 Fable 5 退費窗今晚就關、到下週 GPT-5.6 大概率上線、再到 Harvey 進新加坡跟 Mastra 那場 npm 事件的 root cause，最後我會拆三個目前最值得搶的 SaaS 點子。
+
+先講最緊急的，Fable 5。Anthropic 對 6 月 9 號到 6 月 14 號之間升級 Pro、Max、Team 的訂閱戶，開了一個 prorated 退費窗——前提是你升級之後因為 6 月 12 號商務部那道禁令，根本沒實際用到 Fable 5 的 Mythos 級能力。這個窗今天美西時間晚上 11 點 59 分就關，注意是今天，不是明天，錯過就是真的吃下去。我看到滿多 indie 朋友在升級當週遇到禁令以後就把 Fable 5 擺著沒用，那種就是退費標的。已經升級又有實際用到 Mythos 級的，不在退費範圍，這條要分清楚，不要送錯申請被打回票。順帶一提，Fable 5 對 paid subscriber 的免費試用窗 6 月 22 號也會收尾，所以這週就是整個 Fable 5 第一波結算週。
+
+接下來是大家最關心的 GPT-5.6。Polymarket 把 6 月 22 號到 28 號這個區間的命中機率定在百分之八十三，市場共識點向 6 月 24 號禮拜二上線。OpenAI 內部訊號顯示 context 會拉到大約一百五十萬個 token，比 GPT-5.5 的一百萬多了百分之四十三。同梯還會放一個叫 GPT-Bidi-1 的雙向音訊模型，所謂雙向，就是它可以一邊講一邊聽，打斷友善，目標很明確是要挑 ChatGPT 既有的 Advanced Voice Mode。簡單說，如果你手上有 LLM router，下週上線當天 weight 一定要重新排，SWE-Bench Pro 跟 Terminal-Bench 2.2 那一輪測試要全部 rerun，舊的 prompt 也要重跑漂移檢查。做語音 agent 的朋友，這幾天先想好要不要 fork 出一條 Bidi 專線。
+
+再來是 Harvey。Harvey 這家做法律 AI 的，6 月開了新加坡辦公室，這是它 APAC 的第三站。它的 CEO Winston Weinberg 直接承認 APAC 是主要成長引擎。已經簽進來的客戶我念幾個給你聽：Rajah & Tann、Drew & Napier、Lee & Lee、Oon & Bazul、TSMP、Airwallex，還有新加坡司法部本人。教育合作那塊掛了 NUS Faculty of Law 當策略夥伴。它新加坡團隊 6 個月內要招到 32 個人，2027 上半年目標衝到 40 個人。Harvey 過去兩年的擴張路線是 2024 開雪梨、然後 Bengaluru、然後巴黎、現在 6 月新加坡、7 月還會開芝加哥。所以下一波很明顯，台灣、香港、東京就是它下一個落點。如果你是在台灣或香港做法律 SaaS 的，你看到的就是一個 6 到 9 個月的視窗——可以幫本地律所搭 Harvey shadow stack 的顧問期。
+
+把 Harvey 講完，我來補昨天 Mastra 那場 npm scope takeover 的 root cause，因為這條對 indie 影響其實最深。微軟、Snyk、StepSecurity、Orca、SafeDep、OX Security 五家事件回應報告交叉一致，被劫持的那個叫 ehindero 的帳號，是 Mastra 的前 contributor，這個人離開專案之後，他在 npm scope 的 access 沒有被收回。攻擊者透過 LinkedIn 假徵才連線，誘導他點一個偽裝成面試平台的連結，竊走 npm publish token，整套 Mastra 套件就被植入後門。五家報告都歸因到一個叫 BlueNoroff 的駭客組織，這個組織又被稱為 Sapphire Sleet，是北韓 Lazarus Group 的子單位，這兩年戰術從打交易所轉去打 supply chain 跟開發者。Mastra 維運方目前還沒回應「為什麼 contributor 離開時沒走撤權 SOP」這個最該回答的問題。給 indie 的兩個立刻動作：第一，今天就去盤一次你的 npm 組織跟 GitHub org 的歷史 collaborator，掃 stale token；第二，把 npm 設成 ignore-scripts，或者乾脆遷 pnpm v10，因為 pnpm v10 預設就是把 postinstall、preinstall 關掉，攻擊面直接砍一塊。npm 跟 yarn classic 到現在仍然預設執行 lifecycle script，這是真正可怕的地方。
+
+工具堆疊那邊我快速講一下。Cursor Bugbot 在 6 月 10 號出了 Composer 2.5，數字已經跑出來：平均 review 從 5 分鐘掉到 90 秒、每一輪能抓到 1.62 個 bug、比上一版的 0.56 多了快兩倍、每一輪成本還降了百分之二十二。Cloudflare Workers AI 把 Moonshot 的 Kimi K2.7 Code 跟 Z.ai 的 GLM-5.2 都上架了，K2.7 Code 是一兆參數的 mixture of experts 架構，只啟動 320 億，授權是 Modified MIT 可商用，token 推估價跟 Claude Opus 4.8 差大概六倍。所以 router 那層，新玩法就是 Claude 留給高複雜度 diff、K2.7 跑 batch 任務、Workers 跑 edge，三層分工。
+
+最後三個 SaaS 點子，我講重點。第一個是「Fable 5 退費快篩」chatbot 加 1 對 1 audit，今天 4 小時內就要把 landing page 推出去，預估 24 小時內可以賣 50 到 150 單一次性審核、一單 19 鎂，加 99 鎂的訂閱結構重排，技術複雜度只有五分之一，這是純粹的時間敏感性套利。第二個是「Harvey APAC shadow stack」華語法系顧問包，鎖定台北跟香港 30 到 200 人的中型律所，跨境交易跟 IP 業務佔比超過三成的優先，單案 2 萬到 5 萬鎂顧問費加每月 3 千到 8 千鎂維運，6 個月窗內能接 3 到 5 個案，年化大概 20 萬到 50 萬鎂。第三個是 Kimi K2.7 跟 Claude Opus 4.8 的 router cost optimizer，做成開源工具當引流，audit 1500、3000、6000 鎂三檔，鎖月帳 500 到 1 萬鎂的 indie SaaS 跟 agency。先做一個「把月帳 3000 鎂砍到 1200 鎂」的真實案例配 dashboard 截圖，HN 跟 r/SaaS 一發就有水。詳細的數字、競品比較、引用連結我都放在 show notes 裡，你可以對著文章看。
+
+所以重點是，今晚 11 點 59 分以前先把 Fable 5 退費單送掉、這週把 npm 組織的 stale collaborator 盤乾淨、下週 GPT-5.6 上線前先把你自家 SaaS 的 5 個關鍵 prompt 跟 eval scoreset 寫好，下週二開盤就能直接 A/B。三件事做完，這一週的紅利你就吃到了。
