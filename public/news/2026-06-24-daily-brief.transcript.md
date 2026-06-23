@@ -1,0 +1,21 @@
+今天想聊四件事，全部跟 indie 工程師接下來兩週的工作節奏直接相關。先講最大條的，Claude 又掛了。
+
+6 月 23 日台北時間下午十點十九分，Anthropic 公告 elevated error rates，影響範圍涵蓋 chat、API、Claude Code，只有 Claude for Government 一條線不受影響。Downdetector 在一個小時內衝到八千多筆報修，到下午十一點十九分左右才推出修復，整整一小時全平台中斷。重點不是這一次，而是這是 6 月以來第十次中斷，從 6 月 5 號到 6 月 23 號，三週內十次。Help Net Security 整理出 Anthropic 過去 90 天的實測 uptime 落在 99.12% 到 99.28% 之間，這個數字什麼意思呢，換算成季度就是比 enterprise SLA 承諾的 99.9% 短了大約 57 分鐘。簡單說，付 enterprise 的客戶名義上拿到 99.9%，實測拿到 99.2%，一季多掉一小時，這個落差不是統計噪音、是系統性的。
+
+更糟的是，annualized run rate 從 2025 年底的九十億美金衝到今年五月的四百七十億，五倍以上，但 infrastructure 顯然沒跟上。6 月 2 號那次首次大規模中斷，外媒已經指向是 Claude Code 的 subagent 系統一個 critical bug，subagent 無限增殖、把 token quota 在幾分鐘內燒光、Anthropic 緊急退費。到今天 6 月 24 號，Anthropic 對 6 月任何一次中斷都還沒公布 post-incident root cause analysis。然後 Anthropic 預計十月路演、IPO 倒數八週。
+
+對 indie 來說，今天就有三件事要做。第一，Claude Code 6 月 6 號推的 fallbackModel 設定，今天就把它寫進 settings.json，或是 CLI 加 --fallback-model sonnet,haiku，production deploy 一律加。第二，客戶 SLO 文件那種「Claude API 99.9%」的 narrative 整段改寫，建議改成三層加一個應急：Claude 任一條 → Opus 4.8 baseline → GLM-5.2 或 K2.7 Code 走 Cloudflare Workers AI 或自架，這層脫離 Anthropic 生態 → GPT-5.5 或 5.5-Cyber 對特定 vertical。第三，寫一篇中文短文「Claude 6 月十次中斷的 indie 多模型 failover playbook」丟 LinkedIn、Threads，中文供給接近零，IPO 路演前三個月是 traffic 高峰。接「Claude 多模型 failover + SLO 文件改寫」這種 audit，一次一千五到五千美金，加上月維運 retainer 五百到一千五，這是接下來十四天的熱期。
+
+再來聊 OpenAI 這邊，跟 indie 工程師接美系案子的機會直接相關。6 月 22 號 OpenAI 把 Daybreak 大擴一輪，三件事一起 ship。第一，GPT-5.5-Cyber 全量發布，這是 GPT-5.5 fine-tune 出來的 authorized defensive cyber 變體，專門做 binary reverse engineering、reachability analysis、exploit path tracing。benchmark 來看，CyberGym 拿到 85.6%，比原版 GPT-5.5 的 81.8% 高 3.8 pp，ExploitGym 從 25.95% 跳到 39.5%，提升十三個百分點。重點是它是第一個官方降低 safety refusal threshold 給 authorized defensive cyber 的 frontier 模型，過去要做這類分析得繞 prompt、現在直接走官方管道。第二，Codex Security plugin 內嵌進 dev workflow。第三，叫做 Patch the Planet 的計畫，跟 Trail of Bits、HackerOne、cURL、Go、Python、Sigstore、pyca/cryptography 等三十多個開源專案合作，AI 已經挖出 Linux kernel 八個 info-leak PoC 加二十四個 local priv-esc exploit、OpenBSD 一個 23 年的 use-after-free、FreeBSD 三十四個漏洞、還有影響 NGINX、Apache、IIS、Pingora 的 HTTP/2 Bomb DoS。
+
+對 indie 三條訊號。一，Codex Security plugin 做成 dev tool agency 接案的素材，接「自家 SaaS code base 一次性 Codex Security audit」兩千到五千美金，再加月維運 retainer 五百到一千五。二，賣金融、醫療、政府客戶的 indie SaaS，本週就把 SOC2 或 ISO27001 audit 報告加一頁「採用 OpenAI Daybreak / Codex Security routine」，客戶 RFP 評分加分。三，這條對 indie 工程師個人最有用——熟 Go、Python、curl、FreeBSD、Linux kernel 的工程師，申請成為 Patch the Planet contributor，這是低門檻拿 paid CVE bounty 加履歷信號的機會。LinkedIn 加一個「Daybreak contributor」標籤，接美系 cyber RFP 接受率會明顯拉高。
+
+第三件事 Cursor Bugbot，這條同時是訂正昨日 brief 的 narrative。昨天我寫過「Bugbot 懲罰 iterative workflow」、power user 月帳會爆，這個結論今天就要重算。Cursor 6 月 22 號發布 Bugbot Composer 2.5 升級，三句話結論：平均 review 時間從五分鐘降到 90 秒、cost per run 降 22%、找到的 bug 數多 10%。具體一點看，90% 的 Bugbot run 在三分鐘內結束、平均一個 review 找到 0.62 個 bug，之前是 0.56，cost per run 從之前一塊到一塊半美金降到 0.78 到 1.17 美金。底層底模換成 Composer 2.5，這個是 Cursor 5 月 18 號自家發布的，SWE-Bench Multilingual 79.8%、Terminal-Bench 2.0 69.3%，底模是 Moonshot 的 Kimi K2.5。
+
+新功能三條。一，Pre-Push 跑 /review 會跳選單可以自選跑哪些 agent，或直接打 /review-bugbot、/review-security。二，GitHub 和 GitLab diff 認知，跑過 /review 再開 PR 同一個 diff，Bugbot 自動跳過不重 review。三，incremental reviews，可以設定只 review 自上次以來新增的部分。
+
+所以昨天那個 narrative 要訂正——6 月 22 號之後，power user 跟 iterative workflow 的 cost 跟速度兩項都明顯改善、Bugbot ROI 從「重算可能不划算」變成「重新評估、可能划算」。對 indie 三條動作。一，6 月 8 號 monthly renewal 改 usage-based 的 indie，6 月 22 號之後再算一輪實際月帳、可能比 seat-based 還便宜。二，做 dev tool agency 顧問的 indie，寫一篇中文 case study「6/8 vs 6/22 Bugbot ROI 重算」，中文供給接近零、客戶 inbound 七天熱期。三，把 /review-bugbot、/review-security 自選加 incremental review 寫進客戶 PR review SOP，noise 比一篇一篇 review 低很多。
+
+最後快速帶過幾條延伸。EU AI Act Article 50 仍是 8 月 2 號強制適用、倒數 39 天，但高風險草案的公開意見徵詢從 6 月 23 號延長到 7 月 23 號，多三十天送 feedback，昨日 brief 寫「今天最後一天」過時要訂正。Replit 的 effort-based pricing 從 6 月 18 號對新註冊用戶 rollout、7 月 2 號全量切換。Vercel 6 月 17 號 ship 的 eve 開源 TypeScript agent framework，filesystem-first，Vercel-heavy 的 indie 可以三分鐘 scaffold 起一個 agent。Cloudflare 的 GLM-5.2 在 Workers AI 上 1M context、價格是 GPT-5.5 的 1/6.8，做 router 三軌的權重再加一層。
+
+重點是這樣。Claude 90 天 uptime 不到 enterprise SLA 那個落差是系統性的，IPO 路演前三個月，indie 寫 multi-provider failover narrative 是 first-mover 窗口。OpenAI Daybreak 全擴是 cyber vertical 接案跟個人履歷加值的雙重訊號。Cursor Bugbot 6/22 升級訂正了昨日 narrative，power user 不要急著退訂、ROI 從頭算過一遍。三條都是七到十四天的熱期，今天就動。
