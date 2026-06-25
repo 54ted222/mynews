@@ -1,0 +1,19 @@
+今天想聊三條對 indie 開發者最直接的主線，全部都在這 48 小時內落地，三條都跟「工具預設值改了，你的提案、SOP、客戶範本要跟著翻一次」有關。
+
+第一條，也是今天最熱的，是 GitHub 對 Cordyceps 漏洞家族的正式回應。先把脈絡接起來，禮拜二 6/23 那天，一家叫 Novee Security 的研究機構公開揭露 Cordyceps，這個名字借自一種會控制宿主行為的寄生真菌，講的是 CI/CD 平台的供應鏈攻擊家族，不是單一漏洞，而是命令注入、跨 workflow 權限升級、artifact 投毒這幾招可以組合起來打。前天的日報我們已經要大家自家 SaaS 跟客戶的 GitHub Actions 今天就要 audit。今天確認的是，GitHub 其實早一步在 6/18 的 changelog 就 ship 了 actions/checkout v7 GA，等於是公開揭露前五天就先把護欄裝上。
+
+v7 改了什麼？簡單說，最常見的那個攻擊 pattern，就是 workflow 用 pull_request_target 或 workflow_run 觸發，然後傻傻地從 fork 過來的 PR 把程式碼 checkout 下來跑，這樣 fork PR 等於拿到 base repo 的 GITHUB_TOKEN、secrets，甚至寫權限。社群叫這個 pattern 做 pwn request。v7 從現在起遇到這個 pattern 就直接 fail。如果你 workflow 真的要保留舊行為，必須明確加一行 opt-out，叫 allow-unsafe-pr-checkout 設成 true，否則就不會跑。更關鍵的是 7/16 這個強制升級的 backport，到 v3、v4、v5、v6 全部 supported 的 major version 都會套上同樣的 enforcement，等於就算你 pin 在舊版也躲不掉。
+
+對 indie 三條馬上要做的事：第一，前天剛開的 Cordyceps audit landing page，七天內加一段「v7 升級加 opt-out audit 加 7/16 deadline」，這是抓 inbound 最甜的 hook；第二，自家 SaaS 從今天起 actions/checkout 一律 pin 在 v7，不要用 @main、@v4 那種寬鬆 wildcard，凡是 pull_request_target 跑 fork PR 的 workflow，改成只 checkout base ref、或者乾脆改成 workflow_run 進 sandbox；第三，7/13 那一週、deadline 倒數三天再推一波 inbound，抓那種還沒動的 laggard 客戶。AI coding agent 大量自動產的舊 workflow，是這波 audit 最大的礦。
+
+第二條主線，是 Anthropic 把 Claude Code 在 6/2x 一輪升級，這輪改的是「agent 預設不能再亂搞」這件事。三個重點。一，新增一個 sandbox.credentials 設定，預設就 block sandbox 裡跑的指令去讀 credential 檔跟 secret 環境變數。以前你跑 agentic workflow 還要自己手動清環境，現在預設就隔離。二，auto mode 預設 block 破壞性 git 指令，包括 git reset --hard、git checkout 點、git clean -fd、git stash drop 這幾個，除非使用者明示要丟掉本地。另外 git commit --amend 如果這個 commit 不是 agent 這次 session 自己做的，也會被擋下來。這條等於是把社群長期那個「Claude 把我工作 reset 掉」的 inbound 痛點正式翻篇。三，組織級的 model restrictions ship 進去了，admin 可以在 --model、/model 跟 ANTHROPIC_MODEL 環境變數三個入口統一限定組織允許的模型，超出限制會顯示「restricted by your organization's settings」。順便提一下，stream-stall 那個提示從「No response from API」改成「Waiting for API response」，觸發從 10 秒拉長到 20 秒，等於告訴你大家以前太早慌。同梯還修了 --resume 失敗、structured output、remote MCP 跟 session 一堆 bug。
+
+對 indie 做什麼？跑 Claude Code agentic workflow 的，6/26 起就把 sandbox.credentials 預設值寫進客戶 SOP「sandbox 與 host credential 隔離」那一段。前天剛開的「Claude Code 客戶 troubleshooting 顧問」這個案，再加一條「destructive git audit 加 auto mode 安全護欄 SOP」，一案抓三百到一千美金。賣 enterprise 客戶的 indie，更要把 org-configured model restrictions 寫進客戶 SLO「成本控管加合規模型限定」那段，特別是 Fable 5、Mythos 5 還在 export ban 名單上，一條 setting 就能保證不會被誤用，這在 compliance deck 上是很硬的賣點。
+
+第三條主線，講對賭 GPT-5.6 launch 的人。6/24 那天有個叫 Pankaj Kumar 的 X 帳號預測 GPT-5.6 Pro 會在 6/25 禮拜四 launch，當時還寫得很細，說 reasoning effort 從 768 拉到 960、會整合 Playwright、知識截止 12/2025。結果呢？到今天 6/26 為止，OpenAI 一個字都沒講，沒有官方公告、沒有 release notes、沒有 system card、也沒有 model spec page。Polymarket 那邊已經翻盤，「GPT-5.6 not released by June 28」這個合約，6/22 的時候 odds 才 22%，到今天衝到 78%，原本最熱的「6/22 到 6/28」窗口從 83% 崩到 18%。新的押注集中在「7/31 前」97%、「7/24 前」88%，等於市場已經把預期通通推到七月底。
+
+對 indie 三條 immediate：第一，所有客戶提案或 RFP 標 GPT-5.6、5.6 Pro 「6/25 launch」這個時間點的，今天就要發補充訂正信改成七月底 placeholder，這是避免競標時 score 對不上扣分。第二，如果你本來等 6/25 launch 才能 ship 那篇「Playwright agent loop 對 Claude Code Bash 跟 Browser Use」對比的中文短文，現在暫停發，改寫 evergreen 版，雙版本準備好，等 launch 後一小時內補 benchmark 就上。第三，router eval scoreset 本月就還是用 Opus 4.8、Sonnet 4.6、GLM-5.2 跟 K2.7 Code 這四軌主壓，加註一行「GPT-5.6 七月底前 placeholder」寫進客戶 SOP 就好，不要硬塞進四軌。
+
+最後快速帶一下其他在跑的時程。Replit 的 Effort-Based Pricing 7/2 全量切換，今天倒數六天，Replit-heavy 的 indie 這週要把 per-user spend cap 跟 monthly aggregate cap 雙保險寫進客戶 onboarding。EU AI Act Article 50 倒數 37 天，加上 Digital Omnibus 5/2026 的 provisional agreement，8/2 前已上市的 generative AI 系統可以拿到 12/2 grace period 才需符合 machine-readable marking，違規上限 €35M 或全球營收 7%。賣 EU 客戶的 indie 這週上架「8/2 transparency 加 8/3 Claude Tag 遷移加 12/2 grace period」三時程整合的 RFP 範本，就是自動進客戶 shortlist。Polar 跟 Lemon Squeezy 的 MoR 戰爭也持續發酵，Polar 4% + 40¢、Lemon Squeezy 5% + 50¢，加上五月 Lemon Squeezy 有過一次 support 誤操作 mass cancel 訂閱的事件，遷移 audit 這條線值得跟。
+
+重點是：今天三條主線都共享一個結構——廠商把預設行為改了，indie 的客戶 SOP、提案、RFP 範本要在七天內跟著翻一次，越早動的人吃到的 inbound 越大。actions/checkout v7 加 7/16 backport、Claude Code 6/2x 護欄、GPT-5.6 七月底 placeholder，這三件事今天就排進工作清單。
