@@ -20,6 +20,25 @@
       ]
     },
     {
+      "slug": "ai-agent-guardrails",
+      "articles": [
+        "01-threat-model",
+        "02-architecture",
+        "03-action-controls",
+        "04-toolchain",
+        "05-governance-redteam",
+        "_index"
+      ],
+      "transcripts": [
+        "01-threat-model",
+        "02-architecture",
+        "03-action-controls",
+        "04-toolchain",
+        "05-governance-redteam",
+        "_index"
+      ]
+    },
+    {
       "slug": "ai-agent-service-architecture-2026",
       "articles": [
         "01-overview",
