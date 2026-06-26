@@ -1,6 +1,29 @@
 {
   "topics": [
     {
+      "slug": "ai-agent-service-architecture-2026",
+      "articles": [
+        "01-overview",
+        "02-loop-planning",
+        "03-memory-context",
+        "04-tools-mcp",
+        "05-runtime-durable",
+        "06-security-guardrails",
+        "07-observability-eval-cost",
+        "_index"
+      ],
+      "transcripts": [
+        "01-overview",
+        "02-loop-planning",
+        "03-memory-context",
+        "04-tools-mcp",
+        "05-runtime-durable",
+        "06-security-guardrails",
+        "07-observability-eval-cost",
+        "_index"
+      ]
+    },
+    {
       "slug": "ai-productization-2026",
       "articles": [
         "01-market",
