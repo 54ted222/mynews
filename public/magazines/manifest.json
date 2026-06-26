@@ -1,6 +1,25 @@
 {
   "topics": [
     {
+      "slug": "agent-sandbox-architecture-2026",
+      "articles": [
+        "01-why-agents-need-sandboxes",
+        "02-isolation-primitives",
+        "03-managed-sandbox-providers",
+        "04-coding-agent-local-sandboxes",
+        "05-sandbox-operations-architecture",
+        "_index"
+      ],
+      "transcripts": [
+        "01-why-agents-need-sandboxes",
+        "02-isolation-primitives",
+        "03-managed-sandbox-providers",
+        "04-coding-agent-local-sandboxes",
+        "05-sandbox-operations-architecture",
+        "_index"
+      ]
+    },
+    {
       "slug": "ai-productization-2026",
       "articles": [
         "01-market",
