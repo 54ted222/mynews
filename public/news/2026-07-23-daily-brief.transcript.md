@@ -1,0 +1,13 @@
+今天想聊 7 月 23 號的五條主線，一條一條講清楚。
+
+先從台股講起。昨天 7 月 22 號收盤是四萬四千八百二十五點七八，一天漲了五百九十二點多，等於一點三四趴。但這個數字底下藏了兩件重要的事。第一件事，台積電早盤一度衝到兩千四百四十塊，看起來很有勁，可是尾盤翻黑，只小跌十塊、收兩千四。這代表甚麼？代表四萬五那條上檔壓力線今天沒攻上去、得而復失。第二件事，也是更關鍵的訊號，外資終結了連續十三天的賣超，昨天單日買超一百七十三億、投信也連續二十天買、單日買超一百六十九億。三大法人合計買超三百一十九億。這一組數字加在一起，很多人會直覺說 V 型反轉來了，因為 7 月 17 號那天大跌七點二九趴之後，7 月 20 號、21 號、22 號連續三天反彈，四天看下來 V 反的形狀是完整的。不過我這邊要提醒兩件事：一個是四萬五跟台積電兩千四百四十，這兩條是明確的上檔壓力，追高沒分批就會被套；另一個是外資雖然轉買，但只有一天，如果今天 7 月 23 號外資又轉賣，那昨天這一根就是所謂的陷阱反彈。所以簡單說，本週剩下的兩到三天是關鍵，看得懂節奏的話，可以出一份「四日 V 反完整拆解」的短文，配上「外資連十三賣後首度轉買」跟「投信連二十買撐盤」這兩個結構性訊號，這對做半導體 ETF 客戶 SOP 的顧問來說，是很好的差異化內容。
+
+再來聊 Notion Ship OS。7 月 22 號那場官方直播結束之後，定價跟 tier 結構終於定型了。主要的入場點是 Business 方案，一個 seat 一個月二十美金，包含全套 Notion AI，就是 Agents、AI Meeting Notes、Enterprise Search 三件套一起 bundle，加上 SAML SSO、私有 teamspace、九十天頁面歷史。而 agent credits 是額外的 metered 外掛，大概一千個 credits 十美金。這樣一算，一個十人的小團隊 base 就是兩百美金，agent credits 抓一百到三百美金，換算下來每人每月大概新台幣三百塊全包。這個數字對五到二十人的 AI 產品小團隊來說是可預測的。所以現在的 first-mover 窗口很明確：明天 7 月 24 號早上八點以前，出一篇中文的 SOP audit，題目就叫「Ship OS Business 二十塊 seat 加上 agent credits pool 治理 audit」，觀後二十四小時內是極限。如果錯過就不是 first-mover 了。至於已經在用 Linear 或 Jira 的團隊，我不建議一次遷移，比較務實的路徑是「Ship OS 局部試點、三個月觀察、再全面遷移」這樣分三段走。
+
+第三條聊 Product Hunt 7 月 22 號的榜單。前三名都是全新品，第一名是 CreateOS Sandbox，主打三十毫秒冷啟動的硬體隔離沙箱，給 AI Agent 跑 tool code 用。第二名，也是我覺得對台灣一人團隊最有價值的，是 TwelveLabs 出的 Jockey。它是一個影音 AI agent，透過 MCP 直接接進 Claude Desktop、Cursor、Windsurf，你可以用自然語言下指令，像是「幫我找上一季的產品 demo 片段」或「把客戶推薦的精華剪成一支 highlight」它就直接處理。這對台灣一人 YouTuber、Podcaster、影音代操 agency 來說是新窗，因為以前素材搜尋、剪輯、review 這三段都是各做各的、沒有工作流串起來。所以明天早上八點以前，出一篇「Jockey MCP 加上 Claude Desktop 加上 Descript 等於一人影音 team 全鏈」的中文 SOP，配一支五分鐘 Loom 錄影，48 小時內可以接三到八家 audit 客戶。第三名 CartAI 是 checkout agent，對做蝦皮、LINE Shop、Shopify 一人店的人可以當對照案例看。
+
+再來一條，是明天兩個 hard-stop 撞牆日。第一個，經濟部一一五年 AI 補助 7 月 24 號下午四點五十九分五十九秒 hard-stop、實質只剩一點七個工作日。第二個，DeepSeek 官方 API 的 deepseek-chat 跟 deepseek-reasoner 兩個模型也是 7 月 24 號、UTC 時間下午三點五十九分停用，要遷到 v4-pro 跟 v4-flash。兩件事同一天結束、剛好是明天。這對台灣做「補助代寫」跟「AI Agent 遷移顧問」的獨立開發者來說，就是今天早上八點以前一定要發 outbound，把補助申請書、DeepSeek code migration、企業資安評級三件事包在一起、開價新台幣四萬到八萬 flat 的一夜衝刺 sprint，今天中午前收單一到兩家、明天實作、7 月 25 號完成第二波交付。這是本週最明確的現金流窗口。
+
+最後一條是 Opus 5。X 帳號 @pankajkumar_dev 在 7 月 20 號貼文說「Anthropic 目標是週四 launch、benchmark 跟 Fable 5 差不多但不會超越」，週四就是今天。可是到現在 Anthropic 的 Newsroom、model card、API changelog 三個地方都還沒公告。Polymarket 上那個「7 月 25 號決算日」的機率合約是次要時間錨。所以今天要做的事情很簡單：把監控頻率提高到每兩小時一次，如果今天 UTC 晚上九點以前公告了，十二小時內要出一份中文的 model card 對照表，給台灣五到二十人小團隊做 model router 決策用；如果沒公告，就繼續走 Fable 5 metered 定價壓力這條 megatrend，Fello 那條「未寫進 Anthropic 官方 docs 前一律當虛構」的冷靜線繼續延用。
+
+所以重點是：台股的 V 反不是反轉、是壓力測試，四萬五跟台積兩千四百四十上不去就是陷阱反彈；Ship OS 跟 Jockey 這兩個明天八點前的中文 first-mover 窗絕對不能錯過，這是這週最好賺的兩個 sprint；經濟部補助跟 DeepSeek 遷移明天同一天撞牆，能包在一起賣就是最高單價的一日衝刺；Opus 5 今天沒公告就等 Polymarket 7 月 25 號決算日。就是這五條，做完可以睡了。
