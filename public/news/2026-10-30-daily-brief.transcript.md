@@ -1,0 +1,13 @@
+今天想聊三條主線，加幾個觀察訊號。先講最緊的——10/31 UTC 00:00，也就是台北明天早上 8 點，有兩件事會同時發生：Smithery 的 MCP Proxy 完全關閉，加上 OpenAI 的 Evals 進入 read-only。所以現在到明天這 24 小時，是遷移的最後窗口。
+
+先看 Smithery。簡單說，8 月 5 日 Arcade.dev 收購落實後，86 天過去了，明天 UTC 0 點，run.tools、server.smithery.ai 這兩條 server URL、加上 API、Connect、Toolbox、帳號、CLI、SDK 一次全部下架。付過費的從 8/5 起退款，5 到 10 個工作日到帳。保留下來的只有 smithery.ai 的目錄，變成一個公開的、非 proxy 的 registry，由 Arcade.dev 運營。所以不是「URL 換一下就好」，Smithery 官方自己也寫得很清楚：你還得自己接管 auth 跟 session management，不然打過去也沒辦法用。到 10/23，第三方的 apitracker.io 盤點，只有 Linear 兩條 proxy alias 確認了對映，其他多數還沒對上。對台灣的 Claude Code、Cursor、Codex 用戶來說，今天不處理，明天就斷。
+
+再來 Evals。OpenAI 官方 deprecations 頁面寫得滿清楚，10/31 UTC 0 點 existing evals 進入 read-only、11/30 整個下線。reusable prompts 一起下線，而且沒有 API 可以匯出，只能從 dashboard 手動複製。官方 cookbook 把 Promptfoo 列為建議遷移目標，但有個前提：你的 eval 得先完整跑過一次，它才匯得出 runnable config。另一條路是 Langfuse v4，自稱比舊 Evals 快到 165 倍，可是 Langfuse 也承認，Promptfoo 的 red-teaming 他們沒有對應，得混搭用。還有一點要注意，Agents SDK 的 migration 頁面寫說 workflow graph 的行為不保證完整轉過去，意思是搬完得人工重驗一次。這幾件加起來，今天這 24 小時 crunch 加價接案的空間其實滿大的。
+
+第二條主線，Claude Haiku 4.5。昨天 10/29 是消費端下架首日，今天是 T+1。影響範圍是 claude.ai 的 Free、Pro、Max 聊天，再加 Claude Cowork、Claude Design，model selector 現在都看不到 Haiku 4.5 了。既有對話還在，但你繼續聊的話，接手的是 Haiku 5.5。重點是，Claude Code、Team、Enterprise、API 這條線完全不受影響，4.5 的 model ID 還能用。所以今天使用者會第一次打開 claude.ai 發現「我昨天選的模型不見了」，這就是繁中內容的機會。而且 Haiku 5.5 本身滿有看頭，10/7 ship 到今天 T+23，第三方口徑是輸入每百萬 token 一毛美金、輸出五毛，100K 以內都是這價，超過就 5 倍，1M context、128K 輸出，而且 Haiku 層首次加入 effort dial 五層，從 low 到 max 預設 medium。這個設計如果照 Haiku 4.5 的習慣直接接過去，單位成本跟延遲都可能微漲，FAQ 得明講這件事。
+
+第三條主線，GitHub Universe 2026 Day 2。closing keynote 美西時間 10/29 下午 2 點、台北今天凌晨 5 點落幕，大概 14 小時前。主會場在舊金山 Fort Mason，主題「All together now, in the agentic era」。可是到現在，官方的 Mission Report 彙整文還沒公開，倒是第三方 Insight 已經排了 11/5 美東 webinar 做彙整，從這個訊號反推，官方整合文大概會延後幾天。10/28 已經 ship 的 sessions，像 Copilot evaluation framework、Stop prompting start delegating、MCP security、Agent Merge 這些可以先用。更底層的架構是 2025 年揭幕的 Agent HQ，今年 2/4 已經把 Claude 跟 Codex 併入 public preview，Pro+ 跟 Enterprise 可用。所以真正要寫的是三強對照——Agent HQ、Claude Agent SDK 的 nested subagents、Vercel AI SDK 7 的 WorkflowAgent，三邊的落地差異中文版幾乎沒人做，是個切入點。
+
+最後幾個觀察訊號快速帶過。Anthropic S-1 Day 5，Nasdaq 掛 ANT ticker，1H26 營收 163 億美金，但淨損 807 億，當中 724 億是 SAFE 可轉債的 non-cash 公允價值變動，不要被嚇到。11/9 是 roadshow 情境的 T-10，感恩節 11/26 前上市目標還在。iPhone Duo 進 Week 2 Day 1，二手溢價 Week 1 已經回落——256GB 白 +33.8%、1TB 黑 +33.2%——今天看會不會繼續收斂，首波交期已經排到 2027-01-25，Apple Store 禁 walk-in 滿 8 日。數發部 100 億 AI 新創基金 10 月修正作業要點 T+26，境外公司放寬納投條件已經正式適用，可是到現在還沒有新一輪 pipeline 公開。
+
+重點是，Smithery 跟 Evals 這 24 小時 crunch 是今天最緊的接案機會，Haiku 4.5 下架首日 FAQ 是繁中內容的空窗，GitHub Universe 三強對照是接下來一週的中長線題。三條主線其實圍繞同一件事——agent 底層正從散兵游勇進到正式平台化，台灣這邊的中文落地內容還沒跟上，窗口就在這一兩週。
